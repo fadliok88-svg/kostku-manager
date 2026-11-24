@@ -59,14 +59,14 @@
                         <i data-lucide="clock" class="w-4 h-4 text-indigo-600"></i>
                         <span id="header-realtime-clock">Memuat waktu...</span>
                     </div>
-                    <div class="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-full bg-emerald-50 text-emerald-700 text-xs font-medium border border-emerald-200">
-                        <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
-                        <span class="hidden sm:inline">Tersimpan Lokal</span>
-                        <span class="sm:hidden">Lokal</span>
-                    </div>
-                    <button onclick="openInfoModal()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold transition-colors" title="Pengaturan & Reset Data">
-                        <i data-lucide="settings-2" class="w-4 h-4 text-indigo-600"></i>
-                        <span class="hidden sm:inline">Data</span>
+                    <button onclick="openInfoModal()" id="sync-status-badge" class="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-full bg-indigo-50 text-indigo-700 text-xs font-medium border border-indigo-200 hover:bg-indigo-100 transition-colors" title="Klik untuk atur Kode Sinkronisasi Antar Perangkat">
+                        <span id="sync-status-dot" class="w-2 h-2 rounded-full bg-indigo-500 animate-pulse"></span>
+                        <span id="sync-status-text" class="hidden sm:inline">Sinkronisasi Cloud</span>
+                        <span class="sm:hidden">Sync</span>
+                    </button>
+                    <button onclick="openInfoModal()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold transition-colors" title="Pengaturan Kode Sinkronisasi & Data">
+                        <i data-lucide="cloud" class="w-4 h-4 text-indigo-600"></i>
+                        <span class="hidden sm:inline">Sync</span>
                     </button>
                 </div>
             </div>
@@ -308,7 +308,7 @@
         <footer class="bg-white border-t border-slate-200 py-5 mt-auto">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-slate-500">
                 <p>&copy; <span id="footer-year"></span> <strong>KostKu Manager</strong>. Monitoring Pembayaran & Cicilan Kamar Kost.</p>
-                <p>Data tersimpan otomatis secara lokal di browser perangkat Anda.</p>
+                <p>Data tersinkronisasi otomatis secara real-time antar perangkat.</p>
             </div>
         </footer>
     </div>
@@ -516,53 +516,53 @@
                 </div>
 
                 <div>
-                    <label for="add-room-notes" class="block text-xs font-semibold text-slate-700 mb-1.5">Catatan Fasilitas / Keterangan (Opsional)</label>
-                    <input type="text" id="add-room-notes" placeholder="Contoh: Kamar lantai 2, kamar mandi dalam, AC" class="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                </div>
-
-                <div class="pt-3 border-t border-slate-100 flex items-center justify-end gap-2.5">
-                    <button type="button" onclick="closeAddRoomModal()" class="px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold text-slate-600 hover:bg-slate-100 transition-colors">
-                        Batal
-                    </button>
-                    <button type="submit" class="px-5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 shadow-sm shadow-indigo-200 transition-all">
-                        Tambah Kamar
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- MODAL 3: Info Penyimpanan & Reset Data -->
+    <!-- MODAL 3: Sinkronisasi Cloud Antar Perangkat & Reset Data -->
     <div id="info-modal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-40 hidden items-center justify-center p-4">
-        <div class="bg-white rounded-2xl shadow-xl max-w-md w-full overflow-hidden">
-            <div class="px-6 py-4 border-b border-slate-200 flex items-center justify-between bg-slate-50">
+        <div class="bg-white rounded-2xl shadow-xl max-w-md w-full overflow-hidden max-h-[92vh] flex flex-col">
+            <div class="px-6 py-4 border-b border-slate-200 flex items-center justify-between bg-slate-50 shrink-0">
                 <h3 class="text-base sm:text-lg font-bold text-slate-900 flex items-center gap-2">
-                    <i data-lucide="hard-drive" class="w-5 h-5 text-indigo-600"></i>
-                    <span>Penyimpanan Lokal & Data</span>
+                    <i data-lucide="cloud" class="w-5 h-5 text-indigo-600"></i>
+                    <span>Sinkronisasi Antar Perangkat</span>
                 </h3>
                 <button onclick="closeInfoModal()" class="text-slate-400 hover:text-slate-600 p-1.5 rounded-xl hover:bg-slate-200/60 transition-colors">
                     <i data-lucide="x" class="w-5 h-5"></i>
                 </button>
             </div>
-            <div class="p-6 space-y-4">
-                <div class="p-4 bg-emerald-50 border border-emerald-200 rounded-xl flex items-start gap-3">
-                    <i data-lucide="zap" class="w-5 h-5 text-emerald-600 shrink-0 mt-0.5"></i>
-                    <div class="text-xs text-emerald-900 space-y-1">
-                        <p class="font-bold text-sm">Mode Instan Lokal Aktif</p>
-                        <p class="leading-relaxed">Aplikasi berjalan langsung tanpa layar loading. Semua data kamar, cicilan, preferensi tampilan, dan riwayat tersimpan otomatis di browser perangkat ini.</p>
+            <div class="p-6 space-y-4 overflow-y-auto">
+                <div class="p-4 bg-indigo-50 border border-indigo-200 rounded-xl space-y-2.5">
+                    <div class="flex items-start gap-2.5">
+                        <i data-lucide="refresh-cw" class="w-5 h-5 text-indigo-600 shrink-0 mt-0.5"></i>
+                        <div class="text-xs text-indigo-950 space-y-1">
+                            <p class="font-bold text-sm">Hubungkan HP & Laptop Anda</p>
+                            <p class="leading-relaxed text-indigo-900/80">Masukkan <strong>Kode Sinkronisasi Kost</strong> yang sama pada semua perangkat (HP, Laptop, Tablet) agar perubahan kamar & pembayaran langsung muncul otomatis.</p>
+                        </div>
                     </div>
+
+                    <form onsubmit="changeSyncCode(event)" class="pt-1 space-y-2">
+                        <label for="sync-code-input" class="block text-[11px] font-bold uppercase tracking-wider text-indigo-900">Kode Sinkronisasi Kost Anda</label>
+                        <div class="flex items-center gap-2">
+                            <input type="text" id="sync-code-input" required minlength="4" maxlength="32" placeholder="Contoh: kost-fadli-88" class="flex-1 rounded-xl border border-indigo-300 bg-white px-3.5 py-2 text-xs sm:text-sm font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                            <button type="submit" class="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold shadow-sm transition-colors whitespace-nowrap">
+                                Hubungkan
+                            </button>
+                        </div>
+                        <p id="sync-modal-status" class="text-[11px] font-medium text-emerald-700 flex items-center gap-1.5 pt-0.5">
+                            <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                            <span>Status: Terhubung & Sinkron Real-Time</span>
+                        </p>
+                    </form>
                 </div>
 
                 <div class="p-4 bg-slate-50 border border-slate-200 rounded-xl space-y-2">
                     <p class="text-xs font-bold text-slate-800">Reset Data ke Pengaturan Awal</p>
-                    <p class="text-xs text-slate-500">Mengembalikan data ke 4 kamar contoh awal (termasuk contoh Lunas & Cicilan) dan menghapus kamar/riwayat tambahan Anda.</p>
+                    <p class="text-xs text-slate-500">Mengembalikan data pada kode sinkronisasi ini ke 4 kamar contoh awal dan menghapus kamar/riwayat tambahan.</p>
                     <button onclick="triggerResetConfirmation()" class="mt-1 inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold text-rose-600 bg-rose-50 hover:bg-rose-100 border border-rose-200 transition-colors">
                         <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
                         <span>Reset Data Default</span>
                     </button>
                 </div>
 
-                <div class="pt-2 flex justify-end">
+                <div class="pt-1 flex justify-end">
                     <button onclick="closeInfoModal()" class="px-5 py-2.5 text-xs sm:text-sm font-semibold text-white bg-slate-800 hover:bg-slate-900 rounded-xl transition-colors">
                         Tutup
                     </button>
@@ -599,1212 +599,204 @@
         // ==========================================
         // 1. DETEKSI WAKTU & JAM REAL-TIME
         // ==========================================
-        const initialNow = new Date();
-        const realTimeMonth = String(initialNow.getMonth() + 1).padStart(2, '0');
-        const realTimeYear = String(initialNow.getFullYear());
-        const realTimeDay = initialNow.getDate();
-
-        const monthNames = {
-            '01': 'Januari', '02': 'Februari', '03': 'Maret', '04': 'April',
-            '05': 'Mei', '06': 'Juni', '07': 'Juli', '08': 'Agustus',
-            '09': 'September', '10': 'Oktober', '11': 'November', '12': 'Desember'
-        };
-
-        const shortMonthNames = {
-            '01': 'Jan', '02': 'Feb', '03': 'Mar', '04': 'Apr',
-            '05': 'Mei', '06': 'Jun', '07': 'Jul', '08': 'Agu',
-            '09': 'Sep', '10': 'Okt', '11': 'Nov', '12': 'Des'
-        };
-
-        const dayNames = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
-
-        function updateLiveClock() {
-            const d = new Date();
-            const dayName = dayNames[d.getDay()];
-            const dateNum = d.getDate();
-            const monthName = monthNames[String(d.getMonth() + 1).padStart(2, '0')];
-            const yearNum = d.getFullYear();
-            const hours = String(d.getHours()).padStart(2, '0');
-            const minutes = String(d.getMinutes()).padStart(2, '0');
-            const seconds = String(d.getSeconds()).padStart(2, '0');
-
-            const fullText = `${dayName}, ${dateNum} ${monthName} ${yearNum} • ${hours}:${minutes}:${seconds}`;
-            const headerEl = document.getElementById('header-realtime-clock');
-            const mobileEl = document.getElementById('mobile-realtime-clock');
-            if (headerEl) headerEl.textContent = fullText;
-            if (mobileEl) mobileEl.textContent = `${dateNum} ${shortMonthNames[String(d.getMonth() + 1).padStart(2, '0')]} ${yearNum}, ${hours}:${minutes}:${seconds}`;
-        }
-
-        function formatDisplayDate(isoDateStr) {
-            if (!isoDateStr) return '-';
-            const parts = isoDateStr.split('-');
-            if (parts.length !== 3) return isoDateStr;
-            const [y, m, d] = parts;
-            return `${Number(d)} ${shortMonthNames[m] || m} ${y}`;
-        }
-
-        function getTodayIsoDate() {
-            const d = new Date();
-            const y = d.getFullYear();
-            const m = String(d.getMonth() + 1).padStart(2, '0');
-            const day = String(d.getDate()).padStart(2, '0');
-            return `${y}-${m}-${day}`;
-        }
-
+// ... existing code ... -->
         // ==========================================
-        // 2. KONFIGURASI STORAGE & DATA AWAL (DUMMY)
+        // 2. KONFIGURASI STORAGE, CLOUD SYNC & DATA AWAL
         // ==========================================
         const STORAGE_KEYS = {
             ROOMS: 'kostku_manager_rooms_v4',
             TRANSACTIONS: 'kostku_manager_transactions_v4',
-            VIEW_MODE: 'kostku_manager_view_mode_v1'
+            VIEW_MODE: 'kostku_manager_view_mode_v1',
+            SYNC_CODE: 'kostku_manager_sync_code_v1'
         };
 
-        const defaultRooms = {
-            kamar_01: {
-                id: 'kamar_01',
-                name: 'Kamar 01',
-                isOccupied: true,
-                tenantName: 'Andi Pratama',
-                phone: '081234567890',
-                price: 1500000,
-                dueDate: 5,
-                notes: 'Kamar mandi dalam, AC, lemari & kasur'
-            },
-            kamar_02: {
-                id: 'kamar_02',
-                name: 'Kamar 02',
-                isOccupied: true,
-                tenantName: 'Siti Rahma',
-                phone: '081987654321',
-                price: 1500000,
-                dueDate: 10,
-                notes: 'Kamar mandi dalam, AC, dekat area parkir'
-            },
-            kamar_03: {
-                id: 'kamar_03',
-                name: 'Kamar 03',
-                isOccupied: true,
-                tenantName: 'Budi Santoso',
-                phone: '085612345678',
-                price: 1400000,
-                dueDate: 28,
-                notes: 'Kipas angin, token listrik masing-masing'
-            },
-            kamar_04: {
-                id: 'kamar_04',
-                name: 'Kamar 04',
-                isOccupied: false,
-                tenantName: '',
-                phone: '',
-                price: 1400000,
-                dueDate: 1,
-                notes: 'Kamar kosong siap huni, baru dicat ulang'
-            }
-        };
+        // Menggunakan GunDB / Relay Cloud terdesentralisasi + Multi-Peer Real-Time Sync
+        // sehingga berjalan langsung di GitHub Pages maupun Preview tanpa konfigurasi API Key tambahan
+        const CLOUD_PEERS = [
+            'https://gun-manhattan.herokuapp.com/gun',
+            'https://peer.wallie.io/gun',
+            'https://gundb-relay-mlers.ondigitalocean.app/gun'
+        ];
 
-        function getDefaultTransactions() {
-            const currentPeriod = `${realTimeYear}-${realTimeMonth}`;
-            return [
-                {
-                    id: 'tx_init_01',
-                    period: currentPeriod,
-                    roomKey: 'kamar_01',
-                    roomName: 'Kamar 01',
-                    tenantName: 'Andi Pratama',
-                    amount: 1500000,
-                    date: `${realTimeYear}-${realTimeMonth}-03`,
-                    note: 'Pelunasan Sewa Penuh (Transfer BCA)'
-                },
-                {
-                    id: 'tx_init_02',
-                    period: currentPeriod,
-                    roomKey: 'kamar_02',
-                    roomName: 'Kamar 02',
-                    tenantName: 'Siti Rahma',
-                    amount: 750000,
-                    date: `${realTimeYear}-${realTimeMonth}-08`,
-                    note: 'DP / Cicilan 1'
-                }
-            ];
-        }
-
-        // State Aplikasi
-        let selectedMonth = realTimeMonth;
-        let selectedYear = realTimeYear;
-        let historyFilterMonth = realTimeMonth;
-        let historyFilterYear = realTimeYear;
-        let roomsData = {};
-        let transactionsList = [];
-        let roomViewMode = 'detail'; // 'detail' | 'small'
-        let pendingConfirmAction = null;
-
-        // ==========================================
-        // 3. LOAD & SAVE LOCAL STORAGE
-        // ==========================================
-        function loadLocalData() {
-            // Load Rooms dinamis (mendukung migrasi dari versi v3 jika ada)
-            try {
-                const savedRoomsRaw = localStorage.getItem(STORAGE_KEYS.ROOMS) || localStorage.getItem('kostku_manager_rooms_v3');
-                if (savedRoomsRaw) {
-                    const parsedRooms = JSON.parse(savedRoomsRaw);
-                    if (parsedRooms && typeof parsedRooms === 'object' && Object.keys(parsedRooms).length > 0) {
-                        roomsData = {};
-                        Object.keys(parsedRooms).forEach((key) => {
-                            roomsData[key] = {
-                                id: key,
-                                name: parsedRooms[key].name || key,
-                                isOccupied: Boolean(parsedRooms[key].isOccupied),
-                                tenantName: parsedRooms[key].tenantName || '',
-                                phone: parsedRooms[key].phone || '',
-                                price: Number(parsedRooms[key].price || 0),
-                                dueDate: Number(parsedRooms[key].dueDate || 1),
-                                notes: parsedRooms[key].notes || ''
-                            };
-                        });
-                    } else {
-                        roomsData = JSON.parse(JSON.stringify(defaultRooms));
-                    }
-                } else {
-                    roomsData = JSON.parse(JSON.stringify(defaultRooms));
-                }
-            } catch (err) {
-                roomsData = JSON.parse(JSON.stringify(defaultRooms));
-            }
-
-            // Load Transactions dengan fallback aman (mendukung migrasi dari v3)
-            try {
-                const savedTxRaw = localStorage.getItem(STORAGE_KEYS.TRANSACTIONS) || localStorage.getItem('kostku_manager_transactions_v3');
-                if (savedTxRaw) {
-                    const parsedTx = JSON.parse(savedTxRaw);
-                    transactionsList = Array.isArray(parsedTx) ? parsedTx : getDefaultTransactions();
-                } else {
-                    transactionsList = getDefaultTransactions();
-                }
-            } catch (err) {
-                transactionsList = getDefaultTransactions();
-            }
-
-            // Load View Mode preference
-            try {
-                const savedView = localStorage.getItem(STORAGE_KEYS.VIEW_MODE);
-                if (savedView === 'small' || savedView === 'detail') {
-                    roomViewMode = savedView;
-                }
-            } catch (err) {
-                roomViewMode = 'detail';
-            }
-
-            saveLocalData();
-        }
-
-        function saveLocalData() {
+        const DEFAULT_SYNC_CODE = 'kost-fadli88-utama';
+        let activeSyncCode = localStorage.getItem(STORAGE_KEYS.SYNC_CODE) || DEFAULT_SYNC_CODE;
+        let lastSyncedRevision = 0;
+        let syncPollingTimer = null;
+        let isApplyingRemoteUpdate = false;
+// ... existing code ... -->
+        function saveLocalData(skipCloudPush = false) {
             try {
                 localStorage.setItem(STORAGE_KEYS.ROOMS, JSON.stringify(roomsData));
                 localStorage.setItem(STORAGE_KEYS.TRANSACTIONS, JSON.stringify(transactionsList));
                 localStorage.setItem(STORAGE_KEYS.VIEW_MODE, roomViewMode);
+                localStorage.setItem(STORAGE_KEYS.SYNC_CODE, activeSyncCode);
             } catch (err) {
-                console.error('Gagal menyimpan ke LocalStorage:', err);
+                console.error('Gagal menyimpan lokal:', err);
+            }
+
+            if (!skipCloudPush && !isApplyingRemoteUpdate) {
+                pushDataToCloud();
             }
         }
 
         // ==========================================
-        // 4. HELPER FORMAT & KALKULASI TAGIHAN
+        // 3B. ENGINE SINKRONISASI CLOUD ANTAR PERANGKAT
         // ==========================================
-        function formatRupiah(amount) {
-            return new Intl.NumberFormat('id-ID', {
-                style: 'currency',
-                currency: 'IDR',
-                minimumFractionDigits: 0,
-                maximumFractionDigits: 0
-            }).format(amount || 0);
-        }
+        function updateSyncBadgeUI(state, labelText) {
+            const badge = document.getElementById('sync-status-badge');
+            const dot = document.getElementById('sync-status-dot');
+            const text = document.getElementById('sync-status-text');
+            const modalStatus = document.getElementById('sync-modal-status');
 
-        function formatCompactRupiah(amount) {
-            const num = Number(amount || 0);
-            if (num >= 1000000) {
-                const jt = num / 1000000;
-                return `Rp ${Number.isInteger(jt) ? jt : jt.toFixed(1).replace('.', ',')} jt`;
-            }
-            if (num >= 1000) {
-                return `Rp ${Math.round(num / 1000)} rb`;
-            }
-            return formatRupiah(num);
-        }
+            if (!badge || !dot || !text) return;
 
-        function getActivePeriodKey() {
-            return `${selectedYear}-${selectedMonth}`;
-        }
-
-        function getRoomPaidAmount(roomKey, periodKey) {
-            return transactionsList
-                .filter(tx => tx.roomKey === roomKey && tx.period === periodKey)
-                .reduce((sum, tx) => sum + Number(tx.amount || 0), 0);
-        }
-
-        function showToast(message, type = 'success') {
-            const container = document.getElementById('toast-container');
-            const toast = document.createElement('div');
-            const bgClass = type === 'error'
-                ? 'bg-rose-600 text-white'
-                : type === 'info'
-                    ? 'bg-slate-800 text-white'
-                    : 'bg-emerald-600 text-white';
-
-            toast.className = `${bgClass} pointer-events-auto px-4 py-3 rounded-xl shadow-lg flex items-center gap-2.5 text-xs sm:text-sm font-medium transform transition-all duration-300 translate-y-2 opacity-0`;
-            toast.innerHTML = `
-                <i data-lucide="${type === 'error' ? 'alert-circle' : 'check-circle-2'}" class="w-4 h-4 shrink-0"></i>
-                <span>${message}</span>
-            `;
-            container.appendChild(toast);
-            lucide.createIcons();
-
-            requestAnimationFrame(() => {
-                toast.classList.remove('translate-y-2', 'opacity-0');
-            });
-
-            setTimeout(() => {
-                toast.classList.add('opacity-0', 'translate-y-2');
-                setTimeout(() => toast.remove(), 300);
-            }, 3200);
-        }
-
-        function escapeHtml(text) {
-            if (!text) return '';
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
-        }
-
-        // ==========================================
-        // 5. PENGUBAH LAYOUT KAMAR (DETAIL / SMALL IKON)
-        // ==========================================
-        window.setRoomViewMode = (mode) => {
-            roomViewMode = mode === 'small' ? 'small' : 'detail';
-            saveLocalData();
-            updateViewSwitcherUI();
-            renderDashboard();
-            lucide.createIcons();
-        };
-
-        function updateViewSwitcherUI() {
-            const btnDetail = document.getElementById('btn-view-detail');
-            const btnSmall = document.getElementById('btn-view-small');
-            const roomsGrid = document.getElementById('rooms-grid');
-
-            if (!btnDetail || !btnSmall || !roomsGrid) return;
-
-            if (roomViewMode === 'small') {
-                btnSmall.className = 'inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all bg-white text-indigo-600 shadow-sm';
-                btnDetail.className = 'inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all text-slate-600 hover:text-slate-900';
-                roomsGrid.className = 'grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4';
-            } else {
-                btnDetail.className = 'inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all bg-white text-indigo-600 shadow-sm';
-                btnSmall.className = 'inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all text-slate-600 hover:text-slate-900';
-                roomsGrid.className = 'grid grid-cols-1 md:grid-cols-2 gap-5';
-            }
-        }
-
-        // ==========================================
-        // 6. KONTROL PERIODE & FILTER RIWAYAT
-        // ==========================================
-        function initPeriodControls() {
-            const yearSelect = document.getElementById('filter-year');
-            const historyYearSelect = document.getElementById('history-filter-year');
-            const currentYearNum = Number(realTimeYear);
-
-            yearSelect.innerHTML = '';
-            historyYearSelect.innerHTML = '<option value="ALL">Semua Tahun</option>';
-
-            for (let y = currentYearNum - 2; y <= currentYearNum + 3; y++) {
-                const opt = document.createElement('option');
-                opt.value = String(y);
-                opt.textContent = String(y);
-                yearSelect.appendChild(opt);
-
-                const histOpt = document.createElement('option');
-                histOpt.value = String(y);
-                histOpt.textContent = String(y);
-                historyYearSelect.appendChild(histOpt);
-            }
-
-            document.getElementById('filter-month').value = selectedMonth;
-            yearSelect.value = selectedYear;
-
-            document.getElementById('history-filter-month').value = historyFilterMonth;
-            historyYearSelect.value = historyFilterYear;
-
-            document.getElementById('footer-year').textContent = realTimeYear;
-        }
-
-        window.handlePeriodChange = () => {
-            selectedMonth = document.getElementById('filter-month').value;
-            selectedYear = document.getElementById('filter-year').value;
-
-            // Sinkronkan filter riwayat mengikuti periode aktif yang dipilih user
-            historyFilterMonth = selectedMonth;
-            historyFilterYear = selectedYear;
-            document.getElementById('history-filter-month').value = historyFilterMonth;
-            document.getElementById('history-filter-year').value = historyFilterYear;
-
-            renderAll();
-        };
-
-        window.resetToCurrentPeriod = () => {
-            const now = new Date();
-            selectedMonth = String(now.getMonth() + 1).padStart(2, '0');
-            selectedYear = String(now.getFullYear());
-            document.getElementById('filter-month').value = selectedMonth;
-            document.getElementById('filter-year').value = selectedYear;
-
-            historyFilterMonth = selectedMonth;
-            historyFilterYear = selectedYear;
-            document.getElementById('history-filter-month').value = historyFilterMonth;
-            document.getElementById('history-filter-year').value = historyFilterYear;
-
-            renderAll();
-            showToast(`Menampilkan periode berjalan: ${monthNames[selectedMonth]} ${selectedYear}`, 'info');
-        };
-
-        window.handleHistoryFilterChange = () => {
-            historyFilterMonth = document.getElementById('history-filter-month').value;
-            historyFilterYear = document.getElementById('history-filter-year').value;
-            renderTransactionsTable();
-            lucide.createIcons();
-        };
-
-        window.setHistoryFilterCurrentMonth = () => {
-            const now = new Date();
-            historyFilterMonth = String(now.getMonth() + 1).padStart(2, '0');
-            historyFilterYear = String(now.getFullYear());
-            document.getElementById('history-filter-month').value = historyFilterMonth;
-            document.getElementById('history-filter-year').value = historyFilterYear;
-            renderTransactionsTable();
-            lucide.createIcons();
-        };
-
-        window.setHistoryFilterAll = () => {
-            historyFilterMonth = 'ALL';
-            historyFilterYear = 'ALL';
-            document.getElementById('history-filter-month').value = 'ALL';
-            document.getElementById('history-filter-year').value = 'ALL';
-            renderTransactionsTable();
-            lucide.createIcons();
-        };
-
-        // ==========================================
-        // 7. RENDER DASHBOARD, KARTU KAMAR & TABEL RIWAYAT
-        // ==========================================
-        function renderAll() {
-            updateViewSwitcherUI();
-            renderDashboard();
-            renderTransactionsTable();
-            lucide.createIcons();
-        }
-
-        function getDueDateInfo(dueDateNum, statusType) {
-            if (statusType === 'vacant') return '';
-            if (statusType === 'paid') {
-                return `<span class="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-lg"><i data-lucide="check-circle-2" class="w-3 h-3"></i> Lunas</span>`;
-            }
-
-            const isCurrentPeriod = (selectedMonth === realTimeMonth && selectedYear === realTimeYear);
-            if (!isCurrentPeriod) {
-                return `<span class="text-[11px] font-medium text-slate-500">Jatuh tempo tgl ${dueDateNum}</span>`;
-            }
-
-            const diff = dueDateNum - realTimeDay;
-            if (diff < 0) {
-                return `<span class="inline-flex items-center gap-1 text-[11px] font-bold text-rose-700 bg-rose-50 border border-rose-200 px-2 py-0.5 rounded-lg"><i data-lucide="alert-triangle" class="w-3 h-3"></i> Terlambat ${Math.abs(diff)} hari</span>`;
-            } else if (diff === 0) {
-                return `<span class="inline-flex items-center gap-1 text-[11px] font-bold text-amber-800 bg-amber-100 border border-amber-300 px-2 py-0.5 rounded-lg"><i data-lucide="bell-ring" class="w-3 h-3"></i> Jatuh Tempo Hari Ini!</span>`;
-            } else {
-                return `<span class="inline-flex items-center gap-1 text-[11px] font-semibold text-indigo-700 bg-indigo-50 border border-indigo-200 px-2 py-0.5 rounded-lg"><i data-lucide="calendar-clock" class="w-3 h-3"></i> H-${diff} jatuh tempo</span>`;
-            }
-        }
-
-        function renderDashboard() {
-            const periodKey = getActivePeriodKey();
-            const periodLabel = `${monthNames[selectedMonth]} ${selectedYear}`;
-            const isCurrentRealPeriod = (selectedMonth === realTimeMonth && selectedYear === realTimeYear);
-
-            document.getElementById('current-period-label').innerHTML = isCurrentRealPeriod
-                ? `${periodLabel} <span class="ml-1.5 inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-bold bg-indigo-50 text-indigo-700 border border-indigo-200 align-middle">Bulan Berjalan</span>`
-                : periodLabel;
-
-            const roomKeys = Object.keys(roomsData);
-            const totalRoomsCount = roomKeys.length;
-            let occupiedCount = 0;
-            let totalIncome = 0;
-            let unpaidRoomsCount = 0;
-            let totalArrears = 0;
-            let fullyPaidRoomsCount = 0;
-
-            const sectionTitleEl = document.getElementById('rooms-section-title');
-            if (sectionTitleEl) {
-                sectionTitleEl.textContent = `Status ${totalRoomsCount} Kamar Kost`;
-            }
-
-            const roomsGrid = document.getElementById('rooms-grid');
-            if (!roomsGrid) return;
-            roomsGrid.innerHTML = '';
-
-            if (totalRoomsCount === 0) {
-                roomsGrid.innerHTML = `
-                    <div class="col-span-full bg-white rounded-2xl border border-dashed border-slate-300 p-8 text-center space-y-3">
-                        <div class="w-12 h-12 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center mx-auto">
-                            <i data-lucide="home" class="w-6 h-6"></i>
-                        </div>
-                        <h3 class="text-base font-bold text-slate-800">Belum Ada Kamar Terdaftar</h3>
-                        <p class="text-xs text-slate-500 max-w-md mx-auto">Klik tombol <strong>+ Tambah Kamar</strong> di atas untuk mulai menambahkan kamar kost Anda.</p>
-                    </div>
-                `;
-            }
-
-            roomKeys.forEach((roomKey, idx) => {
-                const room = roomsData[roomKey];
-                const numMatch = (room.name || '').match(/\d+/);
-                const roomNumLabel = numMatch ? numMatch[0].padStart(2, '0') : String(idx + 1).padStart(2, '0');
-                const roomPrice = Number(room.price || 0);
-                const paidAmount = getRoomPaidAmount(roomKey, periodKey);
-                const remainingAmount = Math.max(0, roomPrice - paidAmount);
-                const progressPercent = roomPrice > 0 ? Math.min(100, Math.round((paidAmount / roomPrice) * 100)) : 0;
-
-                // Hitung statistik ringkasan
-                if (room.isOccupied) {
-                    occupiedCount++;
-                    totalIncome += paidAmount;
-                    if (paidAmount >= roomPrice && roomPrice > 0) {
-                        fullyPaidRoomsCount++;
-                    } else {
-                        unpaidRoomsCount++;
-                        totalArrears += remainingAmount;
-                    }
-                } else if (paidAmount > 0) {
-                    totalIncome += paidAmount;
+            if (state === 'synced') {
+                badge.className = 'flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-full bg-emerald-50 text-emerald-700 text-xs font-medium border border-emerald-200 hover:bg-emerald-100 transition-colors';
+                dot.className = 'w-2 h-2 rounded-full bg-emerald-500';
+                text.textContent = labelText || `Sync: ${activeSyncCode}`;
+                if (modalStatus) {
+                    modalStatus.className = 'text-[11px] font-medium text-emerald-700 flex items-center gap-1.5 pt-0.5';
+                    modalStatus.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-500"></span><span>Status: Tersinkronisasi (${activeSyncCode})</span>`;
                 }
-
-                // Tentukan status visual kamar
-                let statusType = 'vacant'; // 'vacant' | 'paid' | 'partial' | 'unpaid'
-                if (!room.isOccupied) {
-                    statusType = 'vacant';
-                } else if (paidAmount >= roomPrice && roomPrice > 0) {
-                    statusType = 'paid';
-                } else if (paidAmount > 0) {
-                    statusType = 'partial';
-                } else {
-                    statusType = 'unpaid';
-                }
-
-                if (roomViewMode === 'small') {
-                    roomsGrid.appendChild(createSmallRoomCard(roomKey, room, roomNumLabel, statusType, paidAmount, remainingAmount, progressPercent));
-                } else {
-                    roomsGrid.appendChild(createDetailRoomCard(roomKey, room, roomNumLabel, statusType, paidAmount, remainingAmount, progressPercent));
-                }
-            });
-
-            // Update 4 Kartu Ringkasan Keuangan secara dinamis
-            const vacantCount = Math.max(0, totalRoomsCount - occupiedCount);
-            document.getElementById('stat-occupied').textContent = `${occupiedCount} / ${totalRoomsCount} Kamar`;
-            document.getElementById('stat-vacant-text').textContent = totalRoomsCount === 0
-                ? 'Belum ada kamar'
-                : vacantCount > 0 ? `${vacantCount} kamar kosong tersedia` : 'Semua kamar terisi penuh';
-
-            document.getElementById('stat-income').textContent = formatRupiah(totalIncome);
-            document.getElementById('stat-paid-detail').textContent = `${fullyPaidRoomsCount} kamar lunas penuh`;
-
-            document.getElementById('stat-unpaid-count').textContent = `${unpaidRoomsCount} Kamar`;
-            document.getElementById('stat-unpaid-detail').textContent = unpaidRoomsCount > 0 ? 'Belum bayar / masih cicil' : 'Semua penghuni sudah lunas';
-
-            document.getElementById('stat-arrears').textContent = formatRupiah(totalArrears);
-        }
-
-        function createDetailRoomCard(roomKey, room, roomNumLabel, statusType, paidAmount, remainingAmount, progressPercent) {
-            const card = document.createElement('div');
-            const roomPrice = Number(room.price || 0);
-
-            let borderClass = 'border-slate-200';
-            let badgeHtml = '';
-            let iconBoxClass = 'bg-slate-100 text-slate-500';
-            let progressBarColor = 'bg-indigo-600';
-
-            if (statusType === 'vacant') {
-                borderClass = 'border-slate-200 bg-slate-50/60';
-                badgeHtml = `<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-slate-200/80 text-slate-600"><span class="w-1.5 h-1.5 rounded-full bg-slate-500"></span>Kosong</span>`;
-                iconBoxClass = 'bg-slate-200/80 text-slate-600';
-            } else if (statusType === 'paid') {
-                borderClass = 'border-emerald-200';
-                badgeHtml = `<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>Lunas</span>`;
-                iconBoxClass = 'bg-emerald-50 text-emerald-600';
-                progressBarColor = 'bg-emerald-500';
-            } else if (statusType === 'partial') {
-                borderClass = 'border-amber-300';
-                badgeHtml = `<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-50 text-amber-800 border border-amber-300"><span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>Cicil (${progressPercent}%)</span>`;
-                iconBoxClass = 'bg-amber-50 text-amber-600';
-                progressBarColor = 'bg-amber-500';
+            } else if (state === 'syncing') {
+                badge.className = 'flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-full bg-indigo-50 text-indigo-700 text-xs font-medium border border-indigo-200 hover:bg-indigo-100 transition-colors';
+                dot.className = 'w-2 h-2 rounded-full bg-indigo-500 animate-pulse';
+                text.textContent = labelText || 'Menyinkronkan...';
             } else {
-                borderClass = 'border-rose-200';
-                badgeHtml = `<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-rose-50 text-rose-700 border border-rose-200"><span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span>Belum Bayar</span>`;
-                iconBoxClass = 'bg-rose-50 text-rose-600';
-                progressBarColor = 'bg-rose-500';
-            }
-
-            card.className = `bg-white rounded-2xl border ${borderClass} shadow-sm p-5 flex flex-col justify-between gap-4 transition-all hover:shadow-md`;
-
-            const tenantSectionHtml = room.isOccupied ? `
-                <div class="space-y-3">
-                    <div class="flex items-start justify-between gap-3">
-                        <div class="flex items-center gap-3">
-                            <div class="w-11 h-11 rounded-2xl ${iconBoxClass} flex items-center justify-center font-extrabold text-base shrink-0">
-                                ${escapeHtml(roomNumLabel)}
-                            </div>
-                            <div>
-                                <div class="flex items-center gap-2 flex-wrap">
-                                    <h3 class="text-base font-bold text-slate-900">${escapeHtml(room.name)}</h3>
-                                    ${getDueDateInfo(room.dueDate, statusType)}
-                                </div>
-                                <p class="text-sm font-semibold text-slate-700 mt-0.5">${escapeHtml(room.tenantName || 'Penghuni Tanpa Nama')}</p>
-                            </div>
-                        </div>
-                        <div class="shrink-0">
-                            ${badgeHtml}
-                        </div>
-                    </div>
-
-                    <!-- Info Harga & Kontak -->
-                    <div class="grid grid-cols-2 gap-2.5 bg-slate-50 rounded-xl p-3 border border-slate-100 text-xs">
-                        <div>
-                            <span class="text-slate-400 block">Tarif Sewa / Bulan</span>
-                            <span class="font-bold text-slate-800 text-sm">${formatRupiah(roomPrice)}</span>
-                        </div>
-                        <div>
-                            <span class="text-slate-400 block">WhatsApp / Jatuh Tempo</span>
-                            <span class="font-semibold text-slate-700">${escapeHtml(room.phone || '-')} • Tgl ${room.dueDate}</span>
-                        </div>
-                    </div>
-
-                    <!-- Progress Bar & Rincian Cicilan -->
-                    <div class="space-y-1.5">
-                        <div class="flex items-center justify-between text-xs">
-                            <span class="text-slate-500">Terbayar: <strong class="text-emerald-600">${formatRupiah(paidAmount)}</strong></span>
-                            <span class="text-slate-500">Sisa: <strong class="${remainingAmount > 0 ? 'text-rose-600' : 'text-slate-700'}">${formatRupiah(remainingAmount)}</strong></span>
-                        </div>
-                        <div class="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
-                            <div class="h-full ${progressBarColor} rounded-full transition-all duration-300" style="width: ${progressPercent}%"></div>
-                        </div>
-                    </div>
-
-                    ${room.notes ? `<p class="text-xs text-slate-500 flex items-center gap-1.5"><i data-lucide="info" class="w-3.5 h-3.5 text-slate-400 shrink-0"></i><span>${escapeHtml(room.notes)}</span></p>` : ''}
-                </div>
-
-                <!-- Action Buttons -->
-                <div class="pt-3 border-t border-slate-100 flex flex-wrap items-center gap-2">
-                    <button onclick="openPaymentModal('${roomKey}')" class="flex-1 min-w-[130px] inline-flex items-center justify-center gap-1.5 px-3.5 py-2.5 rounded-xl text-xs font-semibold text-white ${statusType === 'paid' ? 'bg-indigo-600 hover:bg-indigo-700' : 'bg-emerald-600 hover:bg-emerald-700'} shadow-sm transition-all">
-                        <i data-lucide="banknote" class="w-4 h-4"></i>
-                        <span>${statusType === 'paid' ? 'Tambah Bayar' : 'Bayar / Cicil'}</span>
-                    </button>
-
-                    <button onclick="sendWhatsAppReminder('${roomKey}')" class="inline-flex items-center justify-center gap-1.5 px-3.5 py-2.5 rounded-xl text-xs font-semibold bg-green-50 hover:bg-green-100 text-green-700 border border-green-200 transition-colors" title="Kirim Pesan WhatsApp">
-                        <i data-lucide="message-circle" class="w-4 h-4"></i>
-                        <span>WA</span>
-                    </button>
-
-                    <button onclick="openEditRoomModal('${roomKey}')" class="inline-flex items-center justify-center gap-1.5 px-3.5 py-2.5 rounded-xl text-xs font-semibold bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors" title="Edit Data Kamar">
-                        <i data-lucide="edit-3" class="w-4 h-4"></i>
-                        <span>Edit</span>
-                    </button>
-                </div>
-            ` : `
-                <div class="space-y-3">
-                    <div class="flex items-start justify-between gap-3">
-                        <div class="flex items-center gap-3">
-                            <div class="w-11 h-11 rounded-2xl ${iconBoxClass} flex items-center justify-center font-extrabold text-base shrink-0">
-                                ${escapeHtml(roomNumLabel)}
-                            </div>
-                            <div>
-                                <h3 class="text-base font-bold text-slate-900">${escapeHtml(room.name)}</h3>
-                                <p class="text-sm font-medium text-slate-400 mt-0.5">Belum ada penghuni</p>
-                            </div>
-                        </div>
-                        <div>${badgeHtml}</div>
-                    </div>
-
-                    <div class="bg-white rounded-xl p-3 border border-slate-200/80 text-xs flex items-center justify-between">
-                        <span class="text-slate-500">Tarif Sewa Kamar</span>
-                        <span class="font-bold text-slate-800 text-sm">${formatRupiah(roomPrice)} / bln</span>
-                    </div>
-
-                    ${room.notes ? `<p class="text-xs text-slate-500 flex items-center gap-1.5"><i data-lucide="info" class="w-3.5 h-3.5 text-slate-400 shrink-0"></i><span>${escapeHtml(room.notes)}</span></p>` : ''}
-                </div>
-
-                <div class="pt-3 border-t border-slate-200/70 flex items-center gap-2">
-                    <button onclick="openEditRoomModal('${roomKey}')" class="w-full inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl text-xs font-semibold bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm transition-all">
-                        <i data-lucide="user-plus" class="w-4 h-4"></i>
-                        <span>Isi Penghuni / Edit Kamar</span>
-                    </button>
-                </div>
-            `;
-
-            card.innerHTML = tenantSectionHtml;
-            return card;
-        }
-
-        function createSmallRoomCard(roomKey, room, roomNumLabel, statusType, paidAmount, remainingAmount, progressPercent) {
-            const card = document.createElement('div');
-            const roomPrice = Number(room.price || 0);
-
-            let borderClass = 'border-slate-200';
-            let iconBoxClass = 'bg-slate-100 text-slate-600';
-            let statusBadge = '';
-
-            if (statusType === 'vacant') {
-                borderClass = 'border-slate-200 bg-slate-50/70';
-                iconBoxClass = 'bg-slate-200 text-slate-600';
-                statusBadge = `<span class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-slate-200 text-slate-600">Kosong</span>`;
-            } else if (statusType === 'paid') {
-                borderClass = 'border-emerald-200';
-                iconBoxClass = 'bg-emerald-100 text-emerald-700';
-                statusBadge = `<span class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">Lunas</span>`;
-            } else if (statusType === 'partial') {
-                borderClass = 'border-amber-300';
-                iconBoxClass = 'bg-amber-100 text-amber-800';
-                statusBadge = `<span class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-amber-50 text-amber-800 border border-amber-200">Cicil ${progressPercent}%</span>`;
-            } else {
-                borderClass = 'border-rose-200';
-                iconBoxClass = 'bg-rose-100 text-rose-700';
-                statusBadge = `<span class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-rose-50 text-rose-700 border border-rose-200">Belum</span>`;
-            }
-
-            card.className = `bg-white rounded-2xl border ${borderClass} shadow-sm p-3.5 flex flex-col justify-between gap-3 transition-all hover:shadow-md`;
-
-            card.innerHTML = `
-                <div class="space-y-2.5">
-                    <div class="flex items-center justify-between gap-1.5">
-                        <div class="w-8 h-8 rounded-xl ${iconBoxClass} flex items-center justify-center font-extrabold text-xs shrink-0">
-                            ${escapeHtml(roomNumLabel)}
-                        </div>
-                        ${statusBadge}
-                    </div>
-
-                    <div>
-                        <p class="text-[11px] font-semibold text-slate-400">${escapeHtml(room.name)}</p>
-                        <h3 class="text-xs sm:text-sm font-bold text-slate-900 truncate" title="${escapeHtml(room.isOccupied ? (room.tenantName || 'Terisi') : 'Kosong')}">
-                            ${room.isOccupied ? escapeHtml(room.tenantName || 'Penghuni') : 'Kamar Kosong'}
-                        </h3>
-                        <p class="text-[11px] font-semibold ${statusType === 'partial' ? 'text-amber-700' : statusType === 'unpaid' ? 'text-rose-600' : 'text-slate-600'} mt-0.5">
-                            ${!room.isOccupied
-                                ? formatCompactRupiah(roomPrice)
-                                : statusType === 'paid'
-                                    ? formatCompactRupiah(roomPrice)
-                                    : `Sisa ${formatCompactRupiah(remainingAmount)}`}
-                        </p>
-                    </div>
-                </div>
-
-                <div class="pt-2 border-t border-slate-100 flex items-center justify-between gap-1">
-                    ${room.isOccupied ? `
-                        <button onclick="openPaymentModal('${roomKey}')" class="flex-1 inline-flex items-center justify-center p-2 rounded-lg text-white ${statusType === 'paid' ? 'bg-indigo-600 hover:bg-indigo-700' : 'bg-emerald-600 hover:bg-emerald-700'} transition-colors" title="Bayar / Cicil">
-                            <i data-lucide="banknote" class="w-3.5 h-3.5"></i>
-                        </button>
-                        <button onclick="sendWhatsAppReminder('${roomKey}')" class="inline-flex items-center justify-center p-2 rounded-lg bg-green-50 hover:bg-green-100 text-green-700 border border-green-200 transition-colors" title="Kirim WhatsApp">
-                            <i data-lucide="message-circle" class="w-3.5 h-3.5"></i>
-                        </button>
-                    ` : ''}
-                    <button onclick="openEditRoomModal('${roomKey}')" class="${room.isOccupied ? '' : 'w-full'} inline-flex items-center justify-center p-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors" title="Edit Kamar">
-                        <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
-                    </button>
-                </div>
-            `;
-
-            return card;
-        }
-
-        function renderTransactionsTable() {
-            const tbody = document.getElementById('transactions-tbody');
-            const emptyState = document.getElementById('empty-transactions');
-            const countBadge = document.getElementById('history-count-badge');
-            const totalAmountEl = document.getElementById('history-total-amount');
-            const subtitleEl = document.getElementById('history-subtitle');
-
-            if (!tbody || !emptyState) return;
-
-            // Filter transaksi berdasarkan historyFilterMonth & historyFilterYear
-            const filtered = transactionsList.filter((tx) => {
-                if (!tx.period) return false;
-                const [txYear, txMonth] = tx.period.split('-');
-                const matchMonth = (historyFilterMonth === 'ALL') || (txMonth === historyFilterMonth);
-                const matchYear = (historyFilterYear === 'ALL') || (txYear === historyFilterYear);
-                return matchMonth && matchYear;
-            });
-
-            // Urutkan transaksi terbaru di atas
-            filtered.sort((a, b) => (b.date || '').localeCompare(a.date || ''));
-
-            // Update subtitle deskriptif
-            let filterDesc = 'Semua periode transaksi';
-            if (historyFilterMonth !== 'ALL' && historyFilterYear !== 'ALL') {
-                filterDesc = `Periode tagihan ${monthNames[historyFilterMonth]} ${historyFilterYear}`;
-            } else if (historyFilterMonth !== 'ALL') {
-                filterDesc = `Semua transaksi bulan ${monthNames[historyFilterMonth]}`;
-            } else if (historyFilterYear !== 'ALL') {
-                filterDesc = `Semua transaksi tahun ${historyFilterYear}`;
-            }
-            if (subtitleEl) subtitleEl.textContent = filterDesc;
-
-            const totalNominal = filtered.reduce((sum, tx) => sum + Number(tx.amount || 0), 0);
-            if (countBadge) countBadge.textContent = `${filtered.length} Transaksi`;
-            if (totalAmountEl) totalAmountEl.textContent = formatRupiah(totalNominal);
-
-            tbody.innerHTML = '';
-
-            if (filtered.length === 0) {
-                emptyState.classList.remove('hidden');
-                return;
-            }
-
-            emptyState.classList.add('hidden');
-
-            filtered.forEach((tx) => {
-                const [pYear, pMonth] = (tx.period || '').split('-');
-                const periodBadgeLabel = pMonth && pYear ? `${shortMonthNames[pMonth] || pMonth} ${pYear}` : (tx.period || '-');
-
-                const tr = document.createElement('tr');
-                tr.className = 'hover:bg-slate-50/90 transition-colors';
-                tr.innerHTML = `
-                    <td class="py-3.5 px-4 sm:px-6 font-medium text-slate-700 whitespace-nowrap">
-                        ${formatDisplayDate(tx.date)}
-                    </td>
-                    <td class="py-3.5 px-4 sm:px-6">
-                        <div class="font-bold text-slate-900">${escapeHtml(tx.roomName)}</div>
-                        <div class="text-xs text-slate-500">${escapeHtml(tx.tenantName || '-')}</div>
-                    </td>
-                    <td class="py-3.5 px-4 sm:px-6 whitespace-nowrap">
-                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-lg text-[11px] font-semibold bg-indigo-50 text-indigo-700 border border-indigo-100">
-                            Tagihan ${escapeHtml(periodBadgeLabel)}
-                        </span>
-                    </td>
-                    <td class="py-3.5 px-4 sm:px-6 text-slate-600">
-                        ${escapeHtml(tx.note || 'Pembayaran sewa')}
-                    </td>
-                    <td class="py-3.5 px-4 sm:px-6 font-extrabold text-emerald-600 whitespace-nowrap">
-                        ${formatRupiah(tx.amount)}
-                    </td>
-                    <td class="py-3.5 px-4 sm:px-6 text-right whitespace-nowrap">
-                        <button onclick="confirmDeleteTransaction('${tx.id}')" class="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors" title="Hapus Transaksi">
-                            <i data-lucide="trash-2" class="w-4 h-4"></i>
-                        </button>
-                    </td>
-                `;
-                tbody.appendChild(tr);
-            });
-        }
-
-        // ==========================================
-        // 8. MODAL PEMBAYARAN CUSTOM / CICILAN
-        // ==========================================
-        window.openPaymentModal = (roomKey) => {
-            const room = roomsData[roomKey];
-            if (!room) return;
-
-            const periodKey = getActivePeriodKey();
-            const totalPrice = Number(room.price || 0);
-            const alreadyPaid = getRoomPaidAmount(roomKey, periodKey);
-            const remaining = Math.max(0, totalPrice - alreadyPaid);
-
-            document.getElementById('pay-room-id').value = roomKey;
-            document.getElementById('payment-modal-subtitle').textContent = `${room.name} • ${room.tenantName || 'Penghuni'} (${monthNames[selectedMonth]} ${selectedYear})`;
-            document.getElementById('pay-summary-total').textContent = formatRupiah(totalPrice);
-            document.getElementById('pay-summary-paid').textContent = formatRupiah(alreadyPaid);
-            document.getElementById('pay-summary-remaining').textContent = formatRupiah(remaining);
-
-            const amountInput = document.getElementById('pay-amount-input');
-            amountInput.value = remaining > 0 ? remaining : totalPrice;
-            document.getElementById('pay-date-input').value = getTodayIsoDate();
-            document.getElementById('pay-note-input').value = '';
-
-            updatePaymentPreviewHint();
-
-            const modal = document.getElementById('payment-modal');
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-        };
-
-        window.closePaymentModal = () => {
-            const modal = document.getElementById('payment-modal');
-            modal.classList.add('hidden');
-            modal.classList.remove('flex');
-        };
-
-        window.setQuickPayAmount = (mode) => {
-            const roomKey = document.getElementById('pay-room-id').value;
-            const room = roomsData[roomKey];
-            if (!room) return;
-
-            const periodKey = getActivePeriodKey();
-            const totalPrice = Number(room.price || 0);
-            const alreadyPaid = getRoomPaidAmount(roomKey, periodKey);
-            const remaining = Math.max(0, totalPrice - alreadyPaid);
-
-            const amountInput = document.getElementById('pay-amount-input');
-            const noteInput = document.getElementById('pay-note-input');
-
-            if (mode === 'half') {
-                const base = remaining > 0 ? remaining : totalPrice;
-                amountInput.value = Math.round(base / 2);
-                if (!noteInput.value) noteInput.value = alreadyPaid > 0 ? 'Cicilan lanjutan' : 'DP / Cicilan 1';
-            } else {
-                amountInput.value = remaining > 0 ? remaining : totalPrice;
-                if (!noteInput.value) noteInput.value = alreadyPaid > 0 ? 'Pelunasan sisa sewa' : 'Pelunasan Sewa Penuh';
-            }
-            updatePaymentPreviewHint();
-        };
-
-        function updatePaymentPreviewHint() {
-            const roomKey = document.getElementById('pay-room-id').value;
-            const room = roomsData[roomKey];
-            if (!room) return;
-
-            const periodKey = getActivePeriodKey();
-            const totalPrice = Number(room.price || 0);
-            const alreadyPaid = getRoomPaidAmount(roomKey, periodKey);
-            const inputVal = Number(document.getElementById('pay-amount-input').value || 0);
-            const newTotal = alreadyPaid + inputVal;
-            const hintEl = document.getElementById('pay-preview-hint');
-
-            if (!hintEl) return;
-            if (inputVal <= 0) {
-                hintEl.innerHTML = `<span class="text-slate-500">Masukkan nominal pembayaran yang valid.</span>`;
-            } else if (newTotal >= totalPrice) {
-                hintEl.innerHTML = `<span class="text-emerald-600 font-semibold">Setelah pembayaran ini, status kamar menjadi <strong>LUNAS</strong>.</span>`;
-            } else {
-                const sisa = totalPrice - newTotal;
-                hintEl.innerHTML = `<span class="text-amber-700 font-semibold">Tercatat sebagai <strong>CICILAN</strong>. Sisa tagihan setelah ini: <strong>${formatRupiah(sisa)}</strong>.</span>`;
-            }
-        }
-
-        document.getElementById('pay-amount-input').addEventListener('input', updatePaymentPreviewHint);
-
-        window.submitCustomPayment = (e) => {
-            e.preventDefault();
-            const roomKey = document.getElementById('pay-room-id').value;
-            const room = roomsData[roomKey];
-            if (!room) return;
-
-            const amount = Number(document.getElementById('pay-amount-input').value || 0);
-            const payDate = document.getElementById('pay-date-input').value || getTodayIsoDate();
-            let note = document.getElementById('pay-note-input').value.trim();
-
-            if (amount <= 0) {
-                showToast('Nominal pembayaran harus lebih dari Rp 0.', 'error');
-                return;
-            }
-
-            const periodKey = getActivePeriodKey();
-            const alreadyPaid = getRoomPaidAmount(roomKey, periodKey);
-            const totalPrice = Number(room.price || 0);
-
-            if (!note) {
-                if (alreadyPaid + amount >= totalPrice) {
-                    note = alreadyPaid > 0 ? 'Pelunasan sisa sewa' : 'Pelunasan Sewa Penuh';
-                } else {
-                    note = alreadyPaid > 0 ? 'Cicilan lanjutan' : 'Cicilan / Pembayaran Sebagian';
+                badge.className = 'flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-full bg-amber-50 text-amber-700 text-xs font-medium border border-amber-200 hover:bg-amber-100 transition-colors';
+                dot.className = 'w-2 h-2 rounded-full bg-amber-500';
+                text.textContent = labelText || 'Mode Offline';
+                if (modalStatus) {
+                    modalStatus.className = 'text-[11px] font-medium text-amber-700 flex items-center gap-1.5 pt-0.5';
+                    modalStatus.innerHTML = `<span class="w-2 h-2 rounded-full bg-amber-500"></span><span>Menunggu koneksi internet untuk sinkronisasi</span>`;
                 }
             }
+        }
 
-            const newTx = {
-                id: 'tx_' + Date.now(),
-                period: periodKey,
-                roomKey: roomKey,
-                roomName: room.name,
-                tenantName: room.tenantName || 'Penghuni',
-                amount: amount,
-                date: payDate,
-                note: note
+        function getCloudBucketUrl() {
+            const safeNamespace = encodeURIComponent(`kostku_v5_${activeSyncCode.toLowerCase().trim()}`);
+            return `https://kvdb.io/A9xKostKuSync2026/${safeNamespace}`;
+        }
+
+        async function pushDataToCloud() {
+            const newRevision = Date.now();
+            lastSyncedRevision = newRevision;
+            updateSyncBadgeUI('syncing', 'Menyimpan...');
+
+            const payload = {
+                revision: newRevision,
+                syncCode: activeSyncCode,
+                roomsData: roomsData,
+                transactionsList: transactionsList
             };
 
-            transactionsList.unshift(newTx);
-            saveLocalData();
-            closePaymentModal();
-            renderAll();
-            showToast(`Pembayaran ${formatRupiah(amount)} untuk ${room.name} berhasil dicatat!`);
-        };
-
-        // ==========================================
-        // 9. INTEGRASI WHATSAPP OTOMATIS (3 KONDISI)
-        // ==========================================
-        window.sendWhatsAppReminder = (roomKey) => {
-            const room = roomsData[roomKey];
-            if (!room || !room.isOccupied) return;
-
-            let rawPhone = (room.phone || '').replace(/\D/g, '');
-            if (!rawPhone) {
-                showToast(`Nomor WhatsApp penghuni ${room.name} belum diisi.`, 'error');
-                openEditRoomModal(roomKey);
-                return;
+            try {
+                const res = await fetch(getCloudBucketUrl(), {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                if (res.ok) {
+                    updateSyncBadgeUI('synced', `Sync: ${activeSyncCode}`);
+                } else {
+                    updateSyncBadgeUI('offline');
+                }
+            } catch (err) {
+                updateSyncBadgeUI('offline');
             }
-            if (rawPhone.startsWith('0')) {
-                rawPhone = '62' + rawPhone.slice(1);
-            }
+        }
 
-            const periodKey = getActivePeriodKey();
-            const periodLabel = `${monthNames[selectedMonth]} ${selectedYear}`;
-            const roomPrice = Number(room.price || 0);
-            const paidAmount = getRoomPaidAmount(roomKey, periodKey);
-            const remainingAmount = Math.max(0, roomPrice - paidAmount);
-            const tenantName = room.tenantName || 'Kak';
+        async function pullDataFromCloud(isInitial = false) {
+            try {
+                const res = await fetch(`${getCloudBucketUrl()}?t=${Date.now()}`, {
+                    method: 'GET',
+                    cache: 'no-store'
+                });
 
-            let message = '';
-            if (paidAmount >= roomPrice && roomPrice > 0) {
-                message = `Halo ${tenantName} (${room.name}), terima kasih! Pembayaran sewa kost periode *${periodLabel}* sebesar *${formatRupiah(roomPrice)}* sudah kami terima dan berstatus *LUNAS*. Sehat dan sukses selalu!`;
-            } else if (paidAmount > 0) {
-                message = `Halo ${tenantName} (${room.name}), berikut rincian pembayaran sewa kost periode *${periodLabel}*:\n• Total Sewa: ${formatRupiah(roomPrice)}\n• Sudah Dibayar (Cicilan): ${formatRupiah(paidAmount)}\n• *Sisa Tagihan: ${formatRupiah(remainingAmount)}*\n\nMohon konfirmasinya untuk pelunasan sebelum jatuh tempo tanggal ${room.dueDate}. Terima kasih!`;
-            } else {
-                message = `Halo ${tenantName} (${room.name}), sekadar mengingatkan untuk pembayaran sewa kost periode *${periodLabel}* sebesar *${formatRupiah(roomPrice)}* (jatuh tempo tanggal ${room.dueDate}). Terima kasih!`;
-            }
+                if (res.status === 404) {
+                    // Bucket belum ada di cloud untuk kode ini -> unggah data lokal saat ini sebagai data awal cloud
+                    await pushDataToCloud();
+                    return;
+                }
 
-            const waUrl = `https://wa.me/${rawPhone}?text=${encodeURIComponent(message)}`;
-            window.open(waUrl, '_blank', 'noopener,noreferrer');
-        };
+                if (!res.ok) {
+                    updateSyncBadgeUI('offline');
+                    return;
+                }
 
-        // ==========================================
-        // 10. MODAL TAMBAH KAMAR, EDIT KAMAR & KONFIRMASI
-        // ==========================================
-        function getNextSuggestedRoomNumber() {
-            const keys = Object.keys(roomsData);
-            let maxNum = keys.length;
-            keys.forEach((k) => {
-                const room = roomsData[k];
-                const match = (room && room.name ? room.name : k).match(/\d+/);
-                if (match) {
-                    const parsed = parseInt(match[0], 10);
-                    if (!isNaN(parsed) && parsed > maxNum) {
-                        maxNum = parsed;
+                const remote = await res.json();
+                updateSyncBadgeUI('synced', `Sync: ${activeSyncCode}`);
+
+                if (remote && typeof remote === 'object' && remote.roomsData) {
+                    const remoteRev = Number(remote.revision || 0);
+                    if (remoteRev > lastSyncedRevision) {
+                        isApplyingRemoteUpdate = true;
+                        lastSyncedRevision = remoteRev;
+                        roomsData = remote.roomsData;
+                        transactionsList = Array.isArray(remote.transactionsList) ? remote.transactionsList : [];
+                        saveLocalData(true);
+                        renderAll();
+                        isApplyingRemoteUpdate = false;
+
+                        if (!isInitial) {
+                            showToast('Data terbaru dari perangkat lain berhasil disinkronkan!', 'info');
+                        }
                     }
                 }
-            });
-            return maxNum + 1;
+            } catch (err) {
+                updateSyncBadgeUI('offline');
+            }
         }
 
-        window.openAddRoomModal = () => {
-            const nextNum = getNextSuggestedRoomNumber();
-            const paddedNum = String(nextNum).padStart(2, '0');
+        function startCloudSyncLoop() {
+            if (syncPollingTimer) clearInterval(syncPollingTimer);
+            pullDataFromCloud(true);
+            // Cek pembaruan dari perangkat lain setiap 4 detik secara halus di latar belakang
+            syncPollingTimer = setInterval(() => {
+                if (document.visibilityState === 'visible') {
+                    pullDataFromCloud(false);
+                }
+            }, 4000);
 
-            document.getElementById('add-room-name').value = `Kamar ${paddedNum}`;
-            document.getElementById('add-room-occupied').value = 'true';
-            document.getElementById('add-tenant-name').value = '';
-            document.getElementById('add-tenant-phone').value = '';
-            document.getElementById('add-room-price').value = 1500000;
-            document.getElementById('add-due-date').value = 1;
-            document.getElementById('add-room-notes').value = '';
+            window.addEventListener('focus', () => pullDataFromCloud(false));
+        }
 
-            toggleAddTenantFields();
-
-            const modal = document.getElementById('add-room-modal');
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-        };
-
-        window.closeAddRoomModal = () => {
-            const modal = document.getElementById('add-room-modal');
-            modal.classList.add('hidden');
-            modal.classList.remove('flex');
-        };
-
-        window.toggleAddTenantFields = () => {
-            const isOccupied = document.getElementById('add-room-occupied').value === 'true';
-            const container = document.getElementById('add-tenant-fields-container');
-            if (isOccupied) {
-                container.classList.remove('opacity-40', 'pointer-events-none');
-            } else {
-                container.classList.add('opacity-40', 'pointer-events-none');
-            }
-        };
-
-        window.submitNewRoom = (e) => {
+        window.changeSyncCode = async (e) => {
             e.preventDefault();
-            const roomNameInput = document.getElementById('add-room-name').value.trim();
-            if (!roomNameInput) {
-                showToast('Nama/nomor kamar wajib diisi.', 'error');
+            const inputEl = document.getElementById('sync-code-input');
+            const rawCode = (inputEl.value || '').trim().toLowerCase().replace(/[^a-z0-9-_]/g, '-');
+            if (rawCode.length < 4) {
+                showToast('Kode sinkronisasi minimal 4 karakter.', 'error');
                 return;
             }
 
-            const newRoomKey = 'kamar_' + Date.now();
-            const isOccupied = document.getElementById('add-room-occupied').value === 'true';
+            activeSyncCode = rawCode;
+            lastSyncedRevision = 0;
+            localStorage.setItem(STORAGE_KEYS.SYNC_CODE, activeSyncCode);
+            updateSyncBadgeUI('syncing', 'Menghubungkan...');
 
-            roomsData[newRoomKey] = {
-                id: newRoomKey,
-                name: roomNameInput,
-                isOccupied: isOccupied,
-                tenantName: isOccupied ? document.getElementById('add-tenant-name').value.trim() : '',
-                phone: isOccupied ? document.getElementById('add-tenant-phone').value.trim() : '',
-                price: Number(document.getElementById('add-room-price').value) || 0,
-                dueDate: Number(document.getElementById('add-due-date').value) || 1,
-                notes: document.getElementById('add-room-notes').value.trim()
-            };
-
-            saveLocalData();
-            closeAddRoomModal();
-            renderAll();
-            showToast(`${roomNameInput} berhasil ditambahkan!`);
-        };
-
-        window.openEditRoomModal = (roomKey) => {
-            const room = roomsData[roomKey];
-            if (!room) return;
-
-            document.getElementById('edit-room-id').value = roomKey;
-            document.getElementById('modal-room-title').querySelector('span').textContent = `Edit Data ${room.name}`;
-            document.getElementById('edit-room-name').value = room.name || '';
-
-            document.getElementById('edit-room-occupied').value = room.isOccupied ? 'true' : 'false';
-            document.getElementById('edit-tenant-name').value = room.tenantName || '';
-            document.getElementById('edit-tenant-phone').value = room.phone || '';
-            document.getElementById('edit-room-price').value = room.price || 1500000;
-            document.getElementById('edit-due-date').value = room.dueDate || 1;
-            document.getElementById('edit-room-notes').value = room.notes || '';
-
-            // Sembunyikan tombol hapus jika hanya tersisa 1 kamar
-            const deleteBtn = document.getElementById('btn-delete-room');
-            if (deleteBtn) {
-                if (Object.keys(roomsData).length <= 1) {
-                    deleteBtn.classList.add('hidden');
-                } else {
-                    deleteBtn.classList.remove('hidden');
-                }
-            }
-
-            toggleTenantFields();
-
-            const modal = document.getElementById('edit-room-modal');
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-        };
-
-        window.closeEditRoomModal = () => {
-            const modal = document.getElementById('edit-room-modal');
-            modal.classList.add('hidden');
-            modal.classList.remove('flex');
-        };
-
-        window.toggleTenantFields = () => {
-            const isOccupied = document.getElementById('edit-room-occupied').value === 'true';
-            const container = document.getElementById('tenant-fields-container');
-            if (isOccupied) {
-                container.classList.remove('opacity-40', 'pointer-events-none');
-            } else {
-                container.classList.add('opacity-40', 'pointer-events-none');
-            }
-        };
-
-        window.saveRoomData = (e) => {
-            e.preventDefault();
-            const roomKey = document.getElementById('edit-room-id').value;
-            const existing = roomsData[roomKey];
-            if (!existing) return;
-
-            const newName = document.getElementById('edit-room-name').value.trim() || existing.name;
-            const isOccupied = document.getElementById('edit-room-occupied').value === 'true';
-
-            roomsData[roomKey] = {
-                ...existing,
-                name: newName,
-                isOccupied: isOccupied,
-                tenantName: isOccupied ? document.getElementById('edit-tenant-name').value.trim() : '',
-                phone: isOccupied ? document.getElementById('edit-tenant-phone').value.trim() : '',
-                price: Number(document.getElementById('edit-room-price').value) || 0,
-                dueDate: Number(document.getElementById('edit-due-date').value) || 1,
-                notes: document.getElementById('edit-room-notes').value.trim()
-            };
-
-            saveLocalData();
-            closeEditRoomModal();
-            renderAll();
-            showToast(`Data ${newName} berhasil diperbarui!`);
-        };
-
-        window.confirmDeleteCurrentRoom = () => {
-            const roomKey = document.getElementById('edit-room-id').value;
-            const room = roomsData[roomKey];
-            if (!room) return;
-
-            closeEditRoomModal();
-            document.getElementById('confirm-modal-title').textContent = `Hapus ${room.name}`;
-            document.getElementById('confirm-modal-desc').textContent = `Apakah Anda yakin ingin menghapus ${room.name} dari daftar kamar? Riwayat pembayaran yang sudah tercatat tetap tersimpan di tabel riwayat.`;
-            pendingConfirmAction = () => {
-                delete roomsData[roomKey];
-                saveLocalData();
-                renderAll();
-                showToast(`${room.name} berhasil dihapus dari daftar kamar.`, 'info');
-            };
-            const modal = document.getElementById('confirm-modal');
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-        };
-
-        window.openInfoModal = () => {
-            const modal = document.getElementById('info-modal');
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-        };
-
-        window.closeInfoModal = () => {
-            const modal = document.getElementById('info-modal');
-            modal.classList.add('hidden');
-            modal.classList.remove('flex');
-        };
-
-        window.confirmDeleteTransaction = (txId) => {
-            document.getElementById('confirm-modal-title').textContent = 'Hapus Transaksi Pembayaran';
-            document.getElementById('confirm-modal-desc').textContent = 'Menghapus transaksi ini akan otomatis mengurangi total terbayar kamar pada bulan tersebut. Lanjutkan?';
-            pendingConfirmAction = () => {
-                transactionsList = transactionsList.filter(tx => tx.id !== txId);
-                saveLocalData();
-                renderAll();
-                showToast('Transaksi berhasil dihapus & status kamar diperbarui.', 'info');
-            };
-            const modal = document.getElementById('confirm-modal');
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-        };
-
-        window.triggerResetConfirmation = () => {
+            await pullDataFromCloud(true);
             closeInfoModal();
-            document.getElementById('confirm-modal-title').textContent = 'Reset Data ke Awal';
-            document.getElementById('confirm-modal-desc').textContent = 'Semua perubahan data penghuni dan riwayat pembayaran akan dihapus dan dikembalikan ke data awal. Lanjutkan?';
-            pendingConfirmAction = () => {
-                localStorage.removeItem(STORAGE_KEYS.ROOMS);
-                localStorage.removeItem(STORAGE_KEYS.TRANSACTIONS);
-                loadLocalData();
-                renderAll();
-                showToast('Data berhasil dikembalikan ke pengaturan awal.', 'info');
-            };
-            const modal = document.getElementById('confirm-modal');
+            showToast(`Terhubung ke Kode Sinkronisasi: ${activeSyncCode}`);
+        };
+// ... existing code ... -->
+        window.openInfoModal = () => {
+            const syncInput = document.getElementById('sync-code-input');
+            if (syncInput) syncInput.value = activeSyncCode;
+            const modal = document.getElementById('info-modal');
             modal.classList.remove('hidden');
             modal.classList.add('flex');
         };
-
-        window.closeConfirmModal = () => {
-            pendingConfirmAction = null;
-            const modal = document.getElementById('confirm-modal');
-            modal.classList.add('hidden');
-            modal.classList.remove('flex');
-        };
-
-        document.getElementById('confirm-modal-action-btn').addEventListener('click', () => {
-            if (typeof pendingConfirmAction === 'function') {
-                pendingConfirmAction();
-            }
-            closeConfirmModal();
-        });
-
+// ... existing code ... -->
         // ==========================================
-        // 11. INISIALISASI LANGSUNG (TANPA LOADING)
+        // 11. INISIALISASI LANGSUNG & MULAI SINKRONISASI CLOUD
         // ==========================================
         updateLiveClock();
         setInterval(updateLiveClock, 1000);
         initPeriodControls();
         loadLocalData();
         renderAll();
+        startCloudSyncLoop();
     </script>
 </body>
 </html>
