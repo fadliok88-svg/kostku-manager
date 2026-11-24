@@ -10,8 +10,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
-    <!-- GunDB untuk Sinkronisasi Real-Time Antar Perangkat tanpa API Key -->
-    <script src="https://cdn.jsdelivr.net/npm/gun/gun.js"></script>
     <style>
         body {
             font-family: 'Inter', sans-serif;
@@ -61,14 +59,14 @@
                         <i data-lucide="clock" class="w-4 h-4 text-indigo-600"></i>
                         <span id="header-realtime-clock">Memuat waktu...</span>
                     </div>
-                    <button type="button" onclick="openInfoModal()" id="sync-status-badge" class="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-full bg-emerald-50 text-emerald-700 text-xs font-medium border border-emerald-200 hover:bg-emerald-100 transition-colors" title="Klik untuk atur Kode Sinkronisasi Antar Perangkat">
-                        <span id="sync-status-dot" class="w-2 h-2 rounded-full bg-emerald-500"></span>
-                        <span id="sync-status-text" class="hidden sm:inline">Sync: kost-fadli88-utama</span>
-                        <span class="sm:hidden">Sync</span>
+                    <button type="button" onclick="manualForceSync()" id="btn-force-sync" class="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl bg-indigo-50 text-indigo-700 text-xs font-semibold border border-indigo-200 hover:bg-indigo-100 transition-colors" title="Tarik & Kirim Data Cloud Sekarang">
+                        <i data-lucide="refresh-cw" id="force-sync-icon" class="w-3.5 h-3.5"></i>
+                        <span class="hidden sm:inline">Sync</span>
                     </button>
-                    <button type="button" onclick="openInfoModal()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold transition-colors" title="Pengaturan Kode Sinkronisasi & Data">
-                        <i data-lucide="cloud" class="w-4 h-4 text-indigo-600"></i>
-                        <span class="hidden sm:inline">Atur Sync</span>
+                    <button type="button" onclick="openInfoModal()" id="sync-status-badge" class="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-full bg-emerald-50 text-emerald-700 text-xs font-medium border border-emerald-200 hover:bg-emerald-100 transition-colors" title="Klik untuk melihat/salin ID Cloud Sync">
+                        <span id="sync-status-dot" class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                        <span id="sync-status-text" class="hidden sm:inline">Cloud Aktif</span>
+                        <span class="sm:hidden">Cloud</span>
                     </button>
                 </div>
             </div>
@@ -552,22 +550,28 @@
                         <i data-lucide="refresh-cw" class="w-5 h-5 text-indigo-600 shrink-0 mt-0.5"></i>
                         <div class="text-xs text-indigo-950 space-y-1">
                             <p class="font-bold text-sm">Hubungkan HP & Laptop Anda</p>
-                            <p class="leading-relaxed text-indigo-900/80">Pastikan <strong>Kode Sinkronisasi Kost</strong> di bawah ini sama di semua perangkat (HP, Laptop, Tablet) agar perubahan kamar & pembayaran langsung tersinkronisasi secara real-time.</p>
+                            <p class="leading-relaxed text-indigo-900/80">Pastikan <strong>ID Cloud Kost</strong> di HP dan Laptop Anda sama persis. Data otomatis sinkron setiap 3 detik tanpa perlu refresh manual.</p>
                         </div>
                     </div>
 
                     <form onsubmit="changeSyncCode(event)" class="pt-1 space-y-2">
-                        <label for="sync-code-input" class="block text-[11px] font-bold uppercase tracking-wider text-indigo-900">Kode Sinkronisasi Kost Anda</label>
+                        <label for="sync-code-input" class="block text-[11px] font-bold uppercase tracking-wider text-indigo-900">Kode Sinkronisasi Kost</label>
                         <div class="flex items-center gap-2">
-                            <input type="text" id="sync-code-input" required minlength="4" maxlength="32" placeholder="Contoh: kost-fadli88-utama" class="flex-1 rounded-xl border border-indigo-300 bg-white px-3.5 py-2 text-xs sm:text-sm font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                            <input type="text" id="sync-code-input" required minlength="4" maxlength="40" placeholder="Contoh: kost-fadli88-utama" class="flex-1 rounded-xl border border-indigo-300 bg-white px-3.5 py-2 text-xs sm:text-sm font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500">
                             <button type="submit" class="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold shadow-sm transition-colors whitespace-nowrap">
                                 Hubungkan
                             </button>
                         </div>
-                        <p id="sync-modal-status" class="text-[11px] font-medium text-emerald-700 flex items-center gap-1.5 pt-0.5">
-                            <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
-                            <span>Status: Terhubung & Sinkron Real-Time</span>
-                        </p>
+                        <div class="flex items-center justify-between pt-1">
+                            <p id="sync-modal-status" class="text-[11px] font-medium text-emerald-700 flex items-center gap-1.5">
+                                <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                                <span>Status: Terhubung & Sinkron Real-Time</span>
+                            </p>
+                            <button type="button" onclick="copySyncIdToClipboard()" class="text-[11px] font-bold text-indigo-700 hover:underline flex items-center gap-1">
+                                <i data-lucide="copy" class="w-3 h-3"></i>
+                                <span>Salin Kode</span>
+                            </button>
+                        </div>
                     </form>
                 </div>
 
@@ -665,25 +669,21 @@
         // 2. KONFIGURASI STORAGE, CLOUD SYNC & DATA AWAL
         // ==========================================
         const STORAGE_KEYS = {
-            ROOMS: 'kostku_manager_rooms_v4',
-            TRANSACTIONS: 'kostku_manager_transactions_v4',
+            ROOMS: 'kostku_manager_rooms_v6',
+            TRANSACTIONS: 'kostku_manager_transactions_v6',
             VIEW_MODE: 'kostku_manager_view_mode_v1',
-            SYNC_CODE: 'kostku_manager_sync_code_v1'
+            SYNC_CODE: 'kostku_manager_cloud_code_v2',
+            REVISION: 'kostku_manager_revision_v6'
         };
 
-        // Relay GunDB publik gratis yang mendukung WebSocket & WebRTC real-time antar perangkat
-        const GUN_PEERS = [
-            'https://gun-manhattan.herokuapp.com/gun',
-            'https://peer.wallie.io/gun',
-            'https://relay.peer.ooo/gun'
-        ];
-
+        const CLOUD_API_APP_KEY = 'kostku88fadli';
+        const CLOUD_API_BASE = 'https://keyvalue.immanuel.co/api/KeyVal';
         const DEFAULT_SYNC_CODE = 'kost-fadli88-utama';
+
         let activeSyncCode = localStorage.getItem(STORAGE_KEYS.SYNC_CODE) || DEFAULT_SYNC_CODE;
-        let lastSyncedRevision = 0;
-        let isApplyingRemoteUpdate = false;
-        let gunInstance = null;
-        let gunRoomNode = null;
+        let lastSyncedRevision = Number(localStorage.getItem(STORAGE_KEYS.REVISION) || 0);
+        let isSyncBusy = false;
+        let syncPollingTimer = null;
 
         function buildDefaultData() {
             const rt = getRealTimeNow();
@@ -930,11 +930,12 @@
                 localStorage.setItem(STORAGE_KEYS.TRANSACTIONS, JSON.stringify(transactionsList));
                 localStorage.setItem(STORAGE_KEYS.VIEW_MODE, roomViewMode);
                 localStorage.setItem(STORAGE_KEYS.SYNC_CODE, activeSyncCode);
+                localStorage.setItem(STORAGE_KEYS.REVISION, String(lastSyncedRevision));
             } catch (err) {
                 console.error('Gagal menyimpan lokal:', err);
             }
 
-            if (!skipCloudPush && !isApplyingRemoteUpdate) {
+            if (!skipCloudPush) {
                 pushDataToCloud();
             }
         }
@@ -950,10 +951,10 @@
             if (state === 'synced') {
                 badge.className = 'flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-full bg-emerald-50 text-emerald-700 text-xs font-medium border border-emerald-200 hover:bg-emerald-100 transition-colors';
                 dot.className = 'w-2 h-2 rounded-full bg-emerald-500';
-                text.textContent = labelText || `Sync: ${activeSyncCode}`;
+                text.textContent = labelText || 'Cloud Aktif';
                 if (modalStatus) {
-                    modalStatus.className = 'text-[11px] font-medium text-emerald-700 flex items-center gap-1.5 pt-0.5';
-                    modalStatus.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-500"></span><span>Status: Tersinkronisasi Real-Time (${activeSyncCode})</span>`;
+                    modalStatus.className = 'text-[11px] font-medium text-emerald-700 flex items-center gap-1.5';
+                    modalStatus.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-500"></span><span>Terhubung ke Cloud (Kode: ${activeSyncCode})</span>`;
                 }
             } else if (state === 'syncing') {
                 badge.className = 'flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-full bg-indigo-50 text-indigo-700 text-xs font-medium border border-indigo-200 hover:bg-indigo-100 transition-colors';
@@ -962,109 +963,145 @@
             } else {
                 badge.className = 'flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-full bg-amber-50 text-amber-700 text-xs font-medium border border-amber-200 hover:bg-amber-100 transition-colors';
                 dot.className = 'w-2 h-2 rounded-full bg-amber-500';
-                text.textContent = labelText || `Lokal (${activeSyncCode})`;
+                text.textContent = labelText || 'Mode Lokal';
                 if (modalStatus) {
-                    modalStatus.className = 'text-[11px] font-medium text-amber-700 flex items-center gap-1.5 pt-0.5';
-                    modalStatus.innerHTML = `<span class="w-2 h-2 rounded-full bg-amber-500"></span><span>Menyinkronkan di latar belakang...</span>`;
+                    modalStatus.className = 'text-[11px] font-medium text-amber-700 flex items-center gap-1.5';
+                    modalStatus.innerHTML = `<span class="w-2 h-2 rounded-full bg-amber-500"></span><span>Mode Lokal Aktif (Data tetap aman di perangkat ini).</span>`;
+                }
+            }
+        }
+
+        function sanitizeCloudKey(code) {
+            return String(code || DEFAULT_SYNC_CODE).replace(/[^a-zA-Z0-9_-]/g, '_');
+        }
+
+        async function pullDataFromCloud(showNotification = false) {
+            if (isSyncBusy) return;
+            isSyncBusy = true;
+
+            try {
+                const safeKey = sanitizeCloudKey(activeSyncCode);
+                const url = `${CLOUD_API_BASE}/GetValue/${CLOUD_API_APP_KEY}/${safeKey}?t=${Date.now()}`;
+                const res = await fetch(url, { method: 'GET' });
+
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+                const rawText = await res.text();
+                updateSyncBadgeUI('synced', 'Cloud Aktif');
+
+                let parsedStr = rawText;
+                try {
+                    parsedStr = JSON.parse(rawText);
+                } catch (_) {}
+
+                if (!parsedStr || parsedStr === 'null' || parsedStr === '') {
+                    isSyncBusy = false;
+                    await pushDataToCloud(true);
+                    return;
+                }
+
+                const remoteData = typeof parsedStr === 'string' ? JSON.parse(parsedStr) : parsedStr;
+
+                if (remoteData && remoteData.roomsData) {
+                    const remoteRev = Number(remoteData.revision || 0);
+
+                    if (remoteRev > lastSyncedRevision) {
+                        const hadPrev = lastSyncedRevision > 0;
+                        lastSyncedRevision = remoteRev;
+                        roomsData = remoteData.roomsData;
+                        transactionsList = Array.isArray(remoteData.transactionsList) ? remoteData.transactionsList : [];
+                        saveLocalData(true);
+                        renderAll();
+
+                        if (hadPrev || showNotification) {
+                            showToast('Data terbaru dari perangkat lain berhasil disinkronkan!', 'info');
+                        }
+                    } else if (lastSyncedRevision > remoteRev && lastSyncedRevision > 0) {
+                        isSyncBusy = false;
+                        await pushDataToCloud(true);
+                        return;
+                    } else if (showNotification) {
+                        showToast('Data sudah paling mutakhir & sinkron!');
+                    }
+                }
+            } catch (err) {
+                updateSyncBadgeUI('offline', 'Mode Lokal');
+                if (showNotification) {
+                    showToast('Koneksi cloud tertunda. Data tetap tersimpan aman di perangkat ini.', 'info');
+                }
+            } finally {
+                isSyncBusy = false;
+            }
+        }
+
+        async function pushDataToCloud(silent = false) {
+            const newRevision = Date.now();
+            lastSyncedRevision = newRevision;
+            localStorage.setItem(STORAGE_KEYS.REVISION, String(newRevision));
+            updateSyncBadgeUI('syncing', 'Menyimpan...');
+
+            const payloadString = JSON.stringify({
+                revision: newRevision,
+                roomsData,
+                transactionsList
+            });
+
+            try {
+                const safeKey = sanitizeCloudKey(activeSyncCode);
+                const url = `${CLOUD_API_BASE}/UpdateValue/${CLOUD_API_APP_KEY}/${safeKey}/${encodeURIComponent(payloadString)}`;
+                const res = await fetch(url, { method: 'POST' });
+
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+                updateSyncBadgeUI('synced', 'Cloud Aktif');
+            } catch (err) {
+                updateSyncBadgeUI('offline', 'Mode Lokal');
+                if (!silent) {
+                    showToast('Data tersimpan di perangkat ini. Akan otomatis sinkron saat jaringan siap.', 'info');
                 }
             }
         }
 
         function initCloudSync() {
-            updateSyncBadgeUI('syncing', `Sync: ${activeSyncCode}`);
+            updateSyncBadgeUI('syncing', 'Menghubungkan...');
+            pullDataFromCloud(false);
 
-            if (typeof Gun === 'undefined') {
-                updateSyncBadgeUI('offline');
-                return;
-            }
+            if (syncPollingTimer) clearInterval(syncPollingTimer);
+            syncPollingTimer = setInterval(() => {
+                pullDataFromCloud(false);
+            }, 3500);
 
-            try {
-                if (!gunInstance) {
-                    gunInstance = Gun({
-                        peers: GUN_PEERS,
-                        localStorage: false
-                    });
+            document.addEventListener('visibilitychange', () => {
+                if (!document.hidden) {
+                    pullDataFromCloud(false);
                 }
-
-                const cleanNamespace = `kostku_manager_live_v5_${activeSyncCode.toLowerCase().trim()}`;
-                gunRoomNode = gunInstance.get(cleanNamespace);
-
-                let hasReceivedInitialData = false;
-
-                // Dengarkan perubahan real-time dari perangkat lain secara langsung
-                gunRoomNode.on((data) => {
-                    if (!data || !data.payloadJson) return;
-
-                    hasReceivedInitialData = true;
-                    updateSyncBadgeUI('synced', `Sync: ${activeSyncCode}`);
-
-                    try {
-                        const remoteRev = Number(data.revision || 0);
-                        if (remoteRev > lastSyncedRevision) {
-                            const parsed = JSON.parse(data.payloadJson);
-                            if (parsed && parsed.roomsData) {
-                                const hadPreviousRev = lastSyncedRevision > 0;
-                                isApplyingRemoteUpdate = true;
-                                lastSyncedRevision = remoteRev;
-                                roomsData = parsed.roomsData;
-                                transactionsList = Array.isArray(parsed.transactionsList) ? parsed.transactionsList : [];
-                                saveLocalData(true);
-                                renderAll();
-                                isApplyingRemoteUpdate = false;
-
-                                if (hadPreviousRev) {
-                                    showToast('Data terbaru dari perangkat lain berhasil disinkronkan!', 'info');
-                                }
-                            }
-                        }
-                    } catch (parseErr) {
-                        console.error('Gagal memproses payload sync:', parseErr);
-                    }
-                });
-
-                // Jika setelah 2.5 detik belum ada data di cloud untuk kode baru ini, unggah data lokal saat ini
-                setTimeout(() => {
-                    if (!hasReceivedInitialData) {
-                        pushDataToCloud();
-                    }
-                    updateSyncBadgeUI('synced', `Sync: ${activeSyncCode}`);
-                }, 2500);
-            } catch (err) {
-                console.error('Gagal inisialisasi GunDB:', err);
-                updateSyncBadgeUI('offline');
-            }
+            });
         }
 
-        function pushDataToCloud() {
-            if (!gunRoomNode) return;
+        window.manualForceSync = async () => {
+            const icon = document.getElementById('force-sync-icon');
+            if (icon) icon.classList.add('animate-spin');
+            await pullDataFromCloud(true);
+            if (icon) setTimeout(() => icon.classList.remove('animate-spin'), 400);
+        };
 
-            const newRevision = Date.now();
-            lastSyncedRevision = newRevision;
-            updateSyncBadgeUI('syncing', 'Menyimpan...');
-
+        window.copySyncIdToClipboard = () => {
+            const inputEl = document.getElementById('sync-code-input');
+            if (!inputEl) return;
+            inputEl.select();
+            inputEl.setSelectionRange(0, 99999);
             try {
-                const serialized = JSON.stringify({
-                    roomsData: roomsData,
-                    transactionsList: transactionsList
-                });
-
-                gunRoomNode.put({
-                    revision: newRevision,
-                    syncCode: activeSyncCode,
-                    payloadJson: serialized
-                }, () => {
-                    updateSyncBadgeUI('synced', `Sync: ${activeSyncCode}`);
-                });
+                document.execCommand('copy');
+                showToast('Kode sinkronisasi berhasil disalin!');
             } catch (err) {
-                console.error('Gagal push ke cloud:', err);
-                updateSyncBadgeUI('offline');
+                showToast('Silakan salin manual teks kode tersebut.', 'info');
             }
-        }
+        };
 
-        window.changeSyncCode = (e) => {
+        window.changeSyncCode = async (e) => {
             e.preventDefault();
             const inputEl = document.getElementById('sync-code-input');
-            const rawCode = (inputEl.value || '').trim().toLowerCase().replace(/[^a-z0-9-_]/g, '-');
+            const rawCode = (inputEl.value || '').trim().toLowerCase();
             if (rawCode.length < 4) {
                 showToast('Kode sinkronisasi minimal 4 karakter.', 'error');
                 return;
@@ -1073,91 +1110,51 @@
             activeSyncCode = rawCode;
             lastSyncedRevision = 0;
             localStorage.setItem(STORAGE_KEYS.SYNC_CODE, activeSyncCode);
+            localStorage.setItem(STORAGE_KEYS.REVISION, '0');
 
-            initCloudSync();
             closeInfoModal();
-            showToast(`Terhubung ke Kode Sinkronisasi: ${activeSyncCode}`);
+            updateSyncBadgeUI('syncing', 'Menghubungkan...');
+            await pullDataFromCloud(true);
         };
 
         // ==========================================
-        // 5. PENGUBAH LAYOUT TAMPILAN KAMAR (DETAIL / SMALL IKON)
+        // 5. KONTROL PERIODE & VIEW MODE SWITCHER
         // ==========================================
-        window.setRoomViewMode = (mode) => {
-            roomViewMode = mode === 'small' ? 'small' : 'detail';
-            saveLocalData(true);
-            renderAll();
-        };
-
-        function updateViewSwitcherUI() {
-            const btnDetail = document.getElementById('btn-view-detail');
-            const btnSmall = document.getElementById('btn-view-small');
-            const roomsGrid = document.getElementById('rooms-grid');
-
-            if (!btnDetail || !btnSmall || !roomsGrid) return;
-
-            const activeClasses = ['bg-white', 'text-indigo-600', 'shadow-sm'];
-            const inactiveClasses = ['text-slate-600', 'hover:text-slate-900'];
-
-            if (roomViewMode === 'small') {
-                btnSmall.classList.add(...activeClasses);
-                btnSmall.classList.remove(...inactiveClasses);
-                btnDetail.classList.remove(...activeClasses);
-                btnDetail.classList.add(...inactiveClasses);
-
-                roomsGrid.className = 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5';
-            } else {
-                btnDetail.classList.add(...activeClasses);
-                btnDetail.classList.remove(...inactiveClasses);
-                btnSmall.classList.remove(...activeClasses);
-                btnSmall.classList.add(...inactiveClasses);
-
-                roomsGrid.className = 'grid grid-cols-1 md:grid-cols-2 gap-5';
-            }
-        }
-
-        // ==========================================
-        // 6. KONTROL PERIODE & FILTER RIWAYAT
-        // ==========================================
-        function initPeriodControls() {
-            const rt = getRealTimeNow();
-            const currentYearNum = parseInt(rt.year, 10);
-
+        function initYearDropdown() {
             const yearSelect = document.getElementById('filter-year');
             const historyYearSelect = document.getElementById('history-filter-year');
+            if (!yearSelect) return;
+
+            const currentYearNum = parseInt(getRealTimeNow().year, 10);
+            const startYear = currentYearNum - 2;
+            const endYear = currentYearNum + 3;
 
             yearSelect.innerHTML = '';
-            historyYearSelect.innerHTML = '<option value="ALL">Semua Tahun</option>';
-
-            for (let y = currentYearNum - 2; y <= currentYearNum + 3; y++) {
-                const optMain = document.createElement('option');
-                optMain.value = String(y);
-                optMain.textContent = String(y);
-                yearSelect.appendChild(optMain);
-
-                const optHist = document.createElement('option');
-                optHist.value = String(y);
-                optHist.textContent = String(y);
-                historyYearSelect.appendChild(optHist);
+            if (historyYearSelect) {
+                historyYearSelect.innerHTML = '<option value="ALL">Semua Tahun</option>';
             }
 
-            selectedMonth = rt.month;
-            selectedYear = rt.year;
-            historyFilterMonth = rt.month;
-            historyFilterYear = rt.year;
+            for (let y = startYear; y <= endYear; y++) {
+                const opt = document.createElement('option');
+                opt.value = String(y);
+                opt.textContent = String(y);
+                if (String(y) === selectedYear) opt.selected = true;
+                yearSelect.appendChild(opt);
 
-            syncPeriodDropdowns();
-            syncHistoryFilterDropdowns();
-        }
+                if (historyYearSelect) {
+                    const optHist = document.createElement('option');
+                    optHist.value = String(y);
+                    optHist.textContent = String(y);
+                    if (String(y) === historyFilterYear) optHist.selected = true;
+                    historyYearSelect.appendChild(optHist);
+                }
+            }
 
-        function syncPeriodDropdowns() {
-            document.getElementById('filter-month').value = selectedMonth;
-            document.getElementById('filter-year').value = selectedYear;
-            document.getElementById('current-period-label').textContent = `${MONTH_NAMES_ID[selectedMonth]} ${selectedYear}`;
-        }
+            const monthSelect = document.getElementById('filter-month');
+            if (monthSelect) monthSelect.value = selectedMonth;
 
-        function syncHistoryFilterDropdowns() {
-            document.getElementById('history-filter-month').value = historyFilterMonth;
-            document.getElementById('history-filter-year').value = historyFilterYear;
+            const histMonthSelect = document.getElementById('history-filter-month');
+            if (histMonthSelect) histMonthSelect.value = historyFilterMonth;
         }
 
         window.handlePeriodChange = () => {
@@ -1165,8 +1162,12 @@
             selectedYear = document.getElementById('filter-year').value;
             historyFilterMonth = selectedMonth;
             historyFilterYear = selectedYear;
-            syncPeriodDropdowns();
-            syncHistoryFilterDropdowns();
+
+            const histMonthEl = document.getElementById('history-filter-month');
+            const histYearEl = document.getElementById('history-filter-year');
+            if (histMonthEl) histMonthEl.value = historyFilterMonth;
+            if (histYearEl) histYearEl.value = historyFilterYear;
+
             renderAll();
         };
 
@@ -1176,314 +1177,367 @@
             selectedYear = rt.year;
             historyFilterMonth = rt.month;
             historyFilterYear = rt.year;
-            syncPeriodDropdowns();
-            syncHistoryFilterDropdowns();
+
+            initYearDropdown();
             renderAll();
-            showToast(`Menampilkan periode bulan ini (${MONTH_NAMES_ID[selectedMonth]} ${selectedYear})`);
+            showToast(`Menampilkan periode bulan berjalan (${MONTH_NAMES_ID[rt.month]} ${rt.year})`);
         };
 
         window.handleHistoryFilterChange = () => {
-            historyFilterMonth = document.getElementById('history-filter-month').value;
-            historyFilterYear = document.getElementById('history-filter-year').value;
+            const mEl = document.getElementById('history-filter-month');
+            const yEl = document.getElementById('history-filter-year');
+            if (mEl) historyFilterMonth = mEl.value;
+            if (yEl) historyFilterYear = yEl.value;
             renderTransactionsTable();
-            if (window.lucide) lucide.createIcons();
         };
 
         window.setHistoryFilterCurrentMonth = () => {
             const rt = getRealTimeNow();
             historyFilterMonth = rt.month;
             historyFilterYear = rt.year;
-            syncHistoryFilterDropdowns();
+            const mEl = document.getElementById('history-filter-month');
+            const yEl = document.getElementById('history-filter-year');
+            if (mEl) mEl.value = historyFilterMonth;
+            if (yEl) yEl.value = historyFilterYear;
             renderTransactionsTable();
-            if (window.lucide) lucide.createIcons();
+            showToast(`Riwayat difilter: ${MONTH_NAMES_ID[rt.month]} ${rt.year}`);
         };
 
         window.setHistoryFilterAll = () => {
             historyFilterMonth = 'ALL';
             historyFilterYear = 'ALL';
-            syncHistoryFilterDropdowns();
+            const mEl = document.getElementById('history-filter-month');
+            const yEl = document.getElementById('history-filter-year');
+            if (mEl) mEl.value = 'ALL';
+            if (yEl) yEl.value = 'ALL';
             renderTransactionsTable();
-            if (window.lucide) lucide.createIcons();
+            showToast('Menampilkan seluruh riwayat pembayaran');
         };
 
+        window.setRoomViewMode = (mode) => {
+            roomViewMode = mode === 'small' ? 'small' : 'detail';
+            saveLocalData(true);
+            updateViewSwitcherUI();
+            renderRoomsGrid();
+        };
+
+        function updateViewSwitcherUI() {
+            const btnDetail = document.getElementById('btn-view-detail');
+            const btnSmall = document.getElementById('btn-view-small');
+            const roomsGrid = document.getElementById('rooms-grid');
+
+            if (!btnDetail || !btnSmall || !roomsGrid) return;
+
+            const activeClass = 'inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all bg-white text-indigo-600 shadow-sm';
+            const inactiveClass = 'inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all text-slate-600 hover:text-slate-900';
+
+            if (roomViewMode === 'small') {
+                btnSmall.className = activeClass;
+                btnDetail.className = inactiveClass;
+                roomsGrid.className = 'grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3.5 sm:gap-4';
+            } else {
+                btnDetail.className = activeClass;
+                btnSmall.className = inactiveClass;
+                roomsGrid.className = 'grid grid-cols-1 md:grid-cols-2 gap-5';
+            }
+        }
+
         // ==========================================
-        // 7. RENDER DASHBOARD, KARTU KAMAR & RIWAYAT
+        // 6. RENDER RINGKASAN, KARTU KAMAR & RIWAYAT
         // ==========================================
         function getSortedRooms() {
             return Object.values(roomsData).sort((a, b) => (a.order || 0) - (b.order || 0));
         }
 
         function renderAll() {
-            updateViewSwitcherUI();
-            renderDashboard();
-            renderTransactionsTable();
-            if (window.lucide) lucide.createIcons();
-        }
-
-        function renderDashboard() {
             const periodKey = getSelectedPeriodKey();
-            const rooms = getSortedRooms();
-            const totalRoomsCount = rooms.length;
+            const rt = getRealTimeNow();
+            const isCurrent = periodKey === rt.periodKey;
 
-            const sectionTitleEl = document.getElementById('rooms-section-title');
-            if (sectionTitleEl) {
-                sectionTitleEl.textContent = `Status ${totalRoomsCount} Kamar Kost`;
+            const periodLabel = document.getElementById('current-period-label');
+            if (periodLabel) {
+                periodLabel.innerHTML = `${MONTH_NAMES_ID[selectedMonth]} ${selectedYear} ${
+                    isCurrent
+                        ? '<span class="ml-2 inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-100 text-emerald-800 align-middle">Bulan Berjalan</span>'
+                        : ''
+                }`;
+            }
+
+            const roomsList = getSortedRooms();
+            const totalRoomsCount = roomsList.length;
+
+            const roomsSectionTitle = document.getElementById('rooms-section-title');
+            if (roomsSectionTitle) {
+                roomsSectionTitle.textContent = `Status ${totalRoomsCount} Kamar Kost`;
             }
 
             let occupiedCount = 0;
             let totalIncome = 0;
-            let paidRoomsCount = 0;
-            let partialRoomsCount = 0;
-            let unpaidRoomsCount = 0;
+            let paidFullCount = 0;
+            let partialCount = 0;
+            let unpaidRoomCount = 0;
             let totalArrears = 0;
 
-            const roomsGrid = document.getElementById('rooms-grid');
-            roomsGrid.innerHTML = '';
+            roomsList.forEach(room => {
+                if (room.isOccupied) {
+                    occupiedCount++;
+                    const summary = getRoomPaymentSummary(room, periodKey);
+                    totalIncome += summary.amountPaid;
+                    totalArrears += summary.remaining;
 
-            if (rooms.length === 0) {
-                roomsGrid.className = 'grid grid-cols-1';
-                roomsGrid.innerHTML = `
-                    <div class="bg-white rounded-2xl border border-dashed border-slate-300 p-8 text-center space-y-3">
+                    if (summary.status === 'paid') {
+                        paidFullCount++;
+                    } else if (summary.status === 'partial') {
+                        partialCount++;
+                        unpaidRoomCount++;
+                    } else {
+                        unpaidRoomCount++;
+                    }
+                }
+            });
+
+            document.getElementById('stat-occupied').textContent = `${occupiedCount} / ${totalRoomsCount} Kamar`;
+            document.getElementById('stat-vacant-text').textContent = `${Math.max(0, totalRoomsCount - occupiedCount)} kamar kosong`;
+            document.getElementById('stat-income').textContent = formatRupiah(totalIncome);
+            document.getElementById('stat-paid-detail').textContent = `${paidFullCount} lunas${partialCount > 0 ? `, ${partialCount} cicil` : ''}`;
+            document.getElementById('stat-unpaid-count').textContent = `${unpaidRoomCount} Kamar`;
+            document.getElementById('stat-unpaid-detail').textContent = unpaidRoomCount === 0
+                ? 'Semua penghuni lunas'
+                : `${partialCount} sedang cicil, ${unpaidRoomCount - partialCount} belum bayar`;
+            document.getElementById('stat-arrears').textContent = formatRupiah(totalArrears);
+
+            updateViewSwitcherUI();
+            renderRoomsGrid();
+            renderTransactionsTable();
+            if (window.lucide) lucide.createIcons();
+        }
+
+        function renderRoomsGrid() {
+            const grid = document.getElementById('rooms-grid');
+            if (!grid) return;
+
+            const periodKey = getSelectedPeriodKey();
+            const roomsList = getSortedRooms();
+
+            if (roomsList.length === 0) {
+                grid.innerHTML = `
+                    <div class="col-span-full bg-white border border-dashed border-slate-300 rounded-2xl p-10 text-center space-y-3">
                         <div class="w-12 h-12 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center mx-auto">
-                            <i data-lucide="home" class="w-6 h-6"></i>
+                            <i data-lucide="door-closed" class="w-6 h-6"></i>
                         </div>
-                        <div>
-                            <p class="text-sm font-bold text-slate-800">Belum ada kamar terdaftar</p>
-                            <p class="text-xs text-slate-500 mt-0.5">Klik tombol <strong>+ Tambah Kamar</strong> untuk menambahkan kamar kost pertama Anda.</p>
-                        </div>
-                        <button type="button" onclick="openAddRoomModal()" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold">
-                            <i data-lucide="plus" class="w-4 h-4"></i>
-                            <span>Tambah Kamar Pertama</span>
-                        </button>
+                        <p class="text-sm font-bold text-slate-800">Belum ada kamar terdaftar</p>
+                        <p class="text-xs text-slate-500">Klik tombol <strong>Tambah Kamar</strong> untuk menambahkan unit kamar kost pertama Anda.</p>
                     </div>
                 `;
-            } else {
-                rooms.forEach(room => {
-                    const summary = getRoomPaymentSummary(room, periodKey);
-
-                    if (room.isOccupied) {
-                        occupiedCount++;
-                        totalIncome += summary.amountPaid;
-
-                        if (summary.status === 'paid') {
-                            paidRoomsCount++;
-                        } else if (summary.status === 'partial') {
-                            partialRoomsCount++;
-                            unpaidRoomsCount++;
-                            totalArrears += summary.remaining;
-                        } else {
-                            unpaidRoomsCount++;
-                            totalArrears += summary.remaining;
-                        }
-                    }
-
-                    const cardEl = roomViewMode === 'small'
-                        ? createSmallRoomCard(room, summary)
-                        : createDetailRoomCard(room, summary);
-
-                    roomsGrid.appendChild(cardEl);
-                });
+                return;
             }
 
-            // Update 4 Kartu Ringkasan Statistik
-            document.getElementById('stat-occupied').textContent = `${occupiedCount} / ${totalRoomsCount} Kamar`;
-            const vacantCount = Math.max(0, totalRoomsCount - occupiedCount);
-            document.getElementById('stat-vacant-text').textContent = vacantCount > 0 ? `${vacantCount} kamar tersedia` : 'Semua kamar terisi';
-
-            document.getElementById('stat-income').textContent = formatRupiah(totalIncome);
-            document.getElementById('stat-paid-detail').textContent = `${paidRoomsCount} lunas, ${partialRoomsCount} cicil`;
-
-            document.getElementById('stat-unpaid-count').textContent = `${unpaidRoomsCount} Kamar`;
-            document.getElementById('stat-unpaid-detail').textContent = unpaidRoomsCount > 0
-                ? `${partialRoomsCount} cicil, ${unpaidRoomsCount - partialRoomsCount} belum bayar`
-                : 'Semua penghuni lunas!';
-
-            document.getElementById('stat-arrears').textContent = formatRupiah(totalArrears);
+            if (roomViewMode === 'small') {
+                grid.innerHTML = roomsList.map(room => renderSmallRoomCard(room, periodKey)).join('');
+            } else {
+                grid.innerHTML = roomsList.map(room => renderDetailRoomCard(room, periodKey)).join('');
+            }
         }
 
         // Layout A: Detail Ikon (Kartu Lengkap)
-        function createDetailRoomCard(room, summary) {
-            const card = document.createElement('div');
-            const roomNumMatch = room.name.match(/\d+/);
-            const roomBadgeText = roomNumMatch ? roomNumMatch[0].padStart(2, '0') : room.name.slice(0, 2).toUpperCase();
+        function renderDetailRoomCard(room, periodKey) {
+            const summary = getRoomPaymentSummary(room, periodKey);
 
-            let borderClass = 'border-slate-200';
-            let statusBadgeHtml = '';
-
-            if (!room.isOccupied) {
-                borderClass = 'border-slate-200 bg-slate-50/60';
-                statusBadgeHtml = `<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-slate-200/80 text-slate-700"><i data-lucide="door-closed" class="w-3.5 h-3.5"></i>Kosong</span>`;
-            } else if (summary.status === 'paid') {
-                borderClass = 'border-emerald-200';
-                statusBadgeHtml = `<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800"><i data-lucide="check-circle-2" class="w-3.5 h-3.5"></i>Lunas</span>`;
-            } else if (summary.status === 'partial') {
-                borderClass = 'border-amber-300';
-                statusBadgeHtml = `<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-800"><i data-lucide="pie-chart" class="w-3.5 h-3.5"></i>Cicil (${summary.percentage}%)</span>`;
-            } else {
-                borderClass = 'border-rose-200';
-                statusBadgeHtml = `<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-rose-100 text-rose-800"><i data-lucide="clock" class="w-3.5 h-3.5"></i>Belum Bayar</span>`;
-            }
-
-            const dueStatusBadge = room.isOccupied ? getDueStatusBadge(room.dueDate || 1, summary.status) : '';
-
-            let progressSectionHtml = '';
-            if (room.isOccupied) {
-                const barColor = summary.status === 'paid' ? 'bg-emerald-500' : (summary.status === 'partial' ? 'bg-amber-500' : 'bg-rose-400');
-                progressSectionHtml = `
-                    <div class="bg-slate-50 border border-slate-100 rounded-xl p-3 space-y-2">
-                        <div class="flex items-center justify-between text-xs">
-                            <span class="text-slate-500">Terbayar: <strong class="text-emerald-600">${formatRupiah(summary.amountPaid)}</strong></span>
-                            <span class="text-slate-500">Sisa: <strong class="${summary.remaining > 0 ? 'text-rose-600' : 'text-slate-700'}">${formatRupiah(summary.remaining)}</strong></span>
-                        </div>
-                        <div class="w-full h-2 bg-slate-200 rounded-full overflow-hidden">
-                            <div class="${barColor} h-full rounded-full transition-all duration-300" style="width: ${summary.percentage}%"></div>
-                        </div>
-                    </div>
-                `;
-            }
-
-            card.className = `bg-white rounded-2xl border ${borderClass} shadow-sm hover:shadow-md transition-all p-5 flex flex-col justify-between gap-4`;
-            card.innerHTML = `
-                <div class="space-y-3.5">
-                    <!-- Top Row -->
-                    <div class="flex items-start justify-between gap-3">
-                        <div class="flex items-center gap-3">
-                            <div class="w-11 h-11 rounded-xl ${room.isOccupied ? 'bg-indigo-600 text-white' : 'bg-slate-200 text-slate-600'} font-extrabold text-sm flex items-center justify-center shrink-0 shadow-sm">
-                                ${roomBadgeText}
-                            </div>
-                            <div>
-                                <div class="flex items-center gap-2 flex-wrap">
-                                    <h3 class="text-base font-bold text-slate-900">${room.name}</h3>
-                                    ${dueStatusBadge}
-                                </div>
-                                <p class="text-xs font-medium text-slate-500 mt-0.5">
-                                    ${room.isOccupied ? `<span class="text-slate-800 font-semibold">${room.tenantName || 'Penghuni'}</span> • Jatuh tempo tgl ${room.dueDate || 1}` : 'Siap menerima penghuni baru'}
-                                </p>
-                            </div>
-                        </div>
-                        <div class="shrink-0">
-                            ${statusBadgeHtml}
-                        </div>
-                    </div>
-
-                    <!-- Middle Info -->
-                    <div class="grid grid-cols-2 gap-3 text-xs pt-1">
-                        <div class="bg-slate-50/80 px-3 py-2 rounded-xl border border-slate-100">
-                            <span class="text-slate-400 block text-[11px]">Tarif Sewa / Bulan</span>
-                            <span class="font-bold text-slate-800 text-sm">${formatRupiah(room.price)}</span>
-                        </div>
-                        <div class="bg-slate-50/80 px-3 py-2 rounded-xl border border-slate-100">
-                            <span class="text-slate-400 block text-[11px]">WhatsApp Penghuni</span>
-                            <span class="font-semibold text-slate-700 truncate block">${room.isOccupied && room.tenantPhone ? room.tenantPhone : '-'}</span>
-                        </div>
-                    </div>
-
-                    ${progressSectionHtml}
-
-                    ${room.notes ? `<p class="text-[11px] text-slate-500 flex items-center gap-1.5"><i data-lucide="info" class="w-3.5 h-3.5 text-slate-400 shrink-0"></i><span class="truncate">${room.notes}</span></p>` : ''}
-                </div>
-
-                <!-- Action Buttons -->
-                <div class="pt-3 border-t border-slate-100 flex flex-wrap items-center justify-between gap-2">
-                    ${room.isOccupied ? `
-                        <button type="button" onclick="openPaymentModal('${room.id}')" class="flex-1 inline-flex items-center justify-center gap-1.5 px-3.5 py-2.5 rounded-xl ${summary.status === 'paid' ? 'bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200' : 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm shadow-emerald-200'} text-xs font-semibold transition-all">
-                            <i data-lucide="${summary.status === 'paid' ? 'plus-circle' : 'wallet'}" class="w-4 h-4"></i>
-                            <span>${summary.status === 'paid' ? 'Tambah Bayar' : (summary.status === 'partial' ? 'Bayar Sisa / Cicil' : 'Bayar / Cicil')}</span>
-                        </button>
-                        <button type="button" onclick="sendWhatsAppReminder('${room.id}')" class="inline-flex items-center justify-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-teal-50 hover:bg-teal-100 text-teal-700 border border-teal-200 text-xs font-semibold transition-colors" title="Kirim Pengingat / Kuitansi WA">
-                            <i data-lucide="message-circle" class="w-4 h-4"></i>
-                            <span>WA</span>
-                        </button>
-                    ` : `
-                        <button type="button" onclick="openEditRoomModal('${room.id}')" class="flex-1 inline-flex items-center justify-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 text-xs font-semibold transition-colors">
-                            <i data-lucide="user-plus" class="w-4 h-4"></i>
-                            <span>Isi Penghuni</span>
-                        </button>
-                    `}
-                    <button type="button" onclick="openEditRoomModal('${room.id}')" class="inline-flex items-center justify-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold transition-colors" title="Edit Data Kamar">
-                        <i data-lucide="settings-2" class="w-4 h-4"></i>
-                        <span>Edit</span>
-                    </button>
-                </div>
-            `;
-            return card;
-        }
-
-        // Layout B: Small Ikon (Grid 4 Kolom Ringkas)
-        function createSmallRoomCard(room, summary) {
-            const card = document.createElement('div');
-            const roomNumMatch = room.name.match(/\d+/);
-            const roomBadgeText = roomNumMatch ? roomNumMatch[0].padStart(2, '0') : room.name.slice(0, 2).toUpperCase();
-
-            let borderClass = 'border-slate-200';
-            let badgeClass = 'bg-slate-200 text-slate-700';
-            let statusText = 'Kosong';
+            let topStripeClass = 'bg-slate-300';
+            let statusBadge = `<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-slate-100 text-slate-600"><span class="w-1.5 h-1.5 rounded-full bg-slate-500"></span>Kosong</span>`;
 
             if (room.isOccupied) {
                 if (summary.status === 'paid') {
-                    borderClass = 'border-emerald-200';
-                    badgeClass = 'bg-emerald-100 text-emerald-800';
-                    statusText = 'Lunas';
+                    topStripeClass = 'bg-emerald-500';
+                    statusBadge = `<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800"><span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>Lunas</span>`;
                 } else if (summary.status === 'partial') {
-                    borderClass = 'border-amber-300';
-                    badgeClass = 'bg-amber-100 text-amber-800';
-                    statusText = `Cicil ${summary.percentage}%`;
+                    topStripeClass = 'bg-amber-500';
+                    statusBadge = `<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-800"><span class="w-1.5 h-1.5 rounded-full bg-amber-600"></span>Cicil (${summary.percentage}%)</span>`;
                 } else {
-                    borderClass = 'border-rose-200';
-                    badgeClass = 'bg-rose-100 text-rose-800';
-                    statusText = 'Belum';
+                    topStripeClass = 'bg-rose-500';
+                    statusBadge = `<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-rose-100 text-rose-800"><span class="w-1.5 h-1.5 rounded-full bg-rose-600"></span>Belum Bayar</span>`;
                 }
             }
 
-            card.className = `bg-white rounded-2xl border ${borderClass} shadow-sm hover:shadow-md transition-all p-3.5 flex flex-col justify-between gap-3`;
-            card.innerHTML = `
-                <div class="space-y-2.5">
-                    <div class="flex items-center justify-between gap-2">
-                        <div class="flex items-center gap-2 min-w-0">
-                            <div class="w-8 h-8 rounded-lg ${room.isOccupied ? 'bg-indigo-600 text-white' : 'bg-slate-200 text-slate-600'} font-bold text-xs flex items-center justify-center shrink-0">
-                                ${roomBadgeText}
-                            </div>
-                            <h3 class="text-xs sm:text-sm font-bold text-slate-900 truncate">${room.name}</h3>
-                        </div>
-                        <span class="px-2 py-0.5 rounded-full text-[10px] font-bold shrink-0 ${badgeClass}">
-                            ${statusText}
-                        </span>
-                    </div>
+            const dueBadgeHtml = room.isOccupied ? getDueStatusBadge(room.dueDate, summary.status) : '';
 
+            return `
+                <div class="bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition-all overflow-hidden flex flex-col justify-between">
                     <div>
-                        <p class="text-xs font-semibold text-slate-800 truncate">
-                            ${room.isOccupied ? (room.tenantName || 'Penghuni') : '<span class="text-slate-400 italic">Kamar Kosong</span>'}
-                        </p>
-                        <p class="text-[11px] font-medium text-slate-500 mt-0.5">
-                            ${room.isOccupied ? (summary.remaining > 0 ? `Sisa: <strong class="text-rose-600">${formatShortRupiah(summary.remaining)}</strong>` : `<span class="text-emerald-600 font-semibold">${formatShortRupiah(room.price)}</span>`) : formatShortRupiah(room.price)}
-                        </p>
-                    </div>
-                </div>
+                        <div class="h-1.5 w-full ${topStripeClass}"></div>
+                        <div class="p-5 space-y-4">
+                            <!-- Card Header -->
+                            <div class="flex items-start justify-between gap-2">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-11 h-11 rounded-xl ${room.isOccupied ? 'bg-indigo-50 text-indigo-600' : 'bg-slate-100 text-slate-400'} flex items-center justify-center font-extrabold text-sm shrink-0">
+                                        ${room.name.replace(/[^0-9]/g, '') || '#'}
+                                    </div>
+                                    <div>
+                                        <h3 class="text-base font-bold text-slate-900">${room.name}</h3>
+                                        <p class="text-xs text-slate-500 line-clamp-1">${room.notes || 'Standar kamar kost'}</p>
+                                    </div>
+                                </div>
+                                <div class="flex flex-col items-end gap-1 shrink-0">
+                                    ${statusBadge}
+                                    ${dueBadgeHtml}
+                                </div>
+                            </div>
 
-                <div class="pt-2 border-t border-slate-100 flex items-center gap-1.5">
-                    ${room.isOccupied ? `
-                        <button type="button" onclick="openPaymentModal('${room.id}')" class="flex-1 inline-flex items-center justify-center gap-1 py-1.5 px-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] font-semibold transition-colors" title="Bayar / Cicil">
-                            <i data-lucide="wallet" class="w-3.5 h-3.5"></i>
-                            <span>Bayar</span>
+                            <!-- Tenant & Billing Info -->
+                            ${room.isOccupied ? `
+                                <div class="bg-slate-50 rounded-xl p-3.5 border border-slate-100 space-y-2.5 text-xs sm:text-sm">
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-slate-500 flex items-center gap-1.5"><i data-lucide="user" class="w-3.5 h-3.5"></i> Penghuni</span>
+                                        <span class="font-bold text-slate-900">${room.tenantName || 'Tanpa Nama'}</span>
+                                    </div>
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-slate-500 flex items-center gap-1.5"><i data-lucide="phone" class="w-3.5 h-3.5"></i> No. WA</span>
+                                        <span class="font-medium text-slate-700">${room.tenantPhone || '-'}</span>
+                                    </div>
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-slate-500 flex items-center gap-1.5"><i data-lucide="calendar" class="w-3.5 h-3.5"></i> Jatuh Tempo</span>
+                                        <span class="font-semibold text-slate-700">Tanggal ${room.dueDate} / bln</span>
+                                    </div>
+
+                                    <!-- Rincian Tagihan & Cicilan -->
+                                    <div class="pt-2 border-t border-slate-200/80 space-y-1.5">
+                                        <div class="flex items-center justify-between">
+                                            <span class="text-slate-500">Harga Sewa</span>
+                                            <span class="font-bold text-slate-900">${formatRupiah(summary.totalBill)}</span>
+                                        </div>
+                                        ${summary.amountPaid > 0 ? `
+                                            <div class="flex items-center justify-between text-xs">
+                                                <span class="text-emerald-700 font-medium">Sudah Dibayar</span>
+                                                <span class="font-bold text-emerald-700">${formatRupiah(summary.amountPaid)}</span>
+                                            </div>
+                                        ` : ''}
+                                        ${summary.remaining > 0 ? `
+                                            <div class="flex items-center justify-between text-xs">
+                                                <span class="text-rose-600 font-medium">Sisa Tagihan</span>
+                                                <span class="font-extrabold text-rose-600">${formatRupiah(summary.remaining)}</span>
+                                            </div>
+                                        ` : ''}
+
+                                        <!-- Progress Bar Pelunasan -->
+                                        <div class="pt-1">
+                                            <div class="w-full h-2 bg-slate-200 rounded-full overflow-hidden">
+                                                <div class="h-full ${summary.status === 'paid' ? 'bg-emerald-500' : (summary.status === 'partial' ? 'bg-amber-500' : 'bg-slate-300')} transition-all duration-300" style="width: ${summary.percentage}%"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            ` : `
+                                <div class="bg-slate-50/70 rounded-xl p-5 border border-dashed border-slate-200 text-center space-y-1">
+                                    <p class="text-xs font-semibold text-slate-600">Kamar sedang kosong</p>
+                                    <p class="text-xs text-slate-400">Tarif sewa: ${formatRupiah(room.price)} / bulan</p>
+                                </div>
+                            `}
+                        </div>
+                    </div>
+
+                    <!-- Card Actions -->
+                    <div class="px-5 py-3.5 bg-slate-50 border-t border-slate-200/80 flex flex-wrap items-center justify-between gap-2">
+                        ${room.isOccupied ? `
+                            <button type="button" onclick="openPaymentModal('${room.id}')" class="flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold transition-all ${
+                                summary.status === 'paid'
+                                    ? 'bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100'
+                                    : 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm shadow-emerald-200'
+                            }">
+                                <i data-lucide="${summary.status === 'paid' ? 'check-circle-2' : 'banknote'}" class="w-3.5 h-3.5"></i>
+                                <span>${summary.status === 'paid' ? 'Lunas (+Bayar)' : (summary.status === 'partial' ? 'Tambah Cicilan' : 'Bayar / Cicil')}</span>
+                            </button>
+
+                            <button type="button" onclick="sendWhatsAppReminder('${room.id}')" class="inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-green-50 hover:bg-green-100 text-green-700 border border-green-200 text-xs font-semibold transition-colors" title="Kirim Pesan WhatsApp">
+                                <i data-lucide="message-circle" class="w-3.5 h-3.5"></i>
+                                <span>WA</span>
+                            </button>
+                        ` : `
+                            <button type="button" onclick="openEditRoomModal('${room.id}')" class="flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold shadow-sm transition-colors">
+                                <i data-lucide="user-plus" class="w-3.5 h-3.5"></i>
+                                <span>Isi Penghuni</span>
+                            </button>
+                        `}
+
+                        <button type="button" onclick="openEditRoomModal('${room.id}')" class="inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 text-xs font-semibold transition-colors" title="Edit Data Kamar">
+                            <i data-lucide="settings-2" class="w-3.5 h-3.5"></i>
+                            <span>Edit</span>
                         </button>
-                        <button type="button" onclick="sendWhatsAppReminder('${room.id}')" class="p-1.5 rounded-lg bg-teal-50 hover:bg-teal-100 text-teal-700 border border-teal-200 transition-colors" title="Kirim WhatsApp">
-                            <i data-lucide="message-circle" class="w-3.5 h-3.5"></i>
-                        </button>
-                    ` : `
-                        <button type="button" onclick="openEditRoomModal('${room.id}')" class="flex-1 inline-flex items-center justify-center gap-1 py-1.5 px-2 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-[11px] font-semibold transition-colors" title="Isi Penghuni">
-                            <i data-lucide="user-plus" class="w-3.5 h-3.5"></i>
-                            <span>Isi</span>
-                        </button>
-                    `}
-                    <button type="button" onclick="openEditRoomModal('${room.id}')" class="p-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors" title="Edit Kamar">
-                        <i data-lucide="settings-2" class="w-3.5 h-3.5"></i>
-                    </button>
+                    </div>
                 </div>
             `;
-            return card;
         }
 
-        // Render Tabel Riwayat Pembayaran
+        // Layout B: Small Ikon (Grid Ringkas / Compact)
+        function renderSmallRoomCard(room, periodKey) {
+            const summary = getRoomPaymentSummary(room, periodKey);
+
+            let ringColor = 'border-slate-200';
+            let badgeHtml = `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 text-slate-600">Kosong</span>`;
+            let iconBg = 'bg-slate-100 text-slate-500';
+
+            if (room.isOccupied) {
+                if (summary.status === 'paid') {
+                    ringColor = 'border-emerald-200';
+                    iconBg = 'bg-emerald-100 text-emerald-700';
+                    badgeHtml = `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">Lunas</span>`;
+                } else if (summary.status === 'partial') {
+                    ringColor = 'border-amber-200';
+                    iconBg = 'bg-amber-100 text-amber-700';
+                    badgeHtml = `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800">Cicil ${summary.percentage}%</span>`;
+                } else {
+                    ringColor = 'border-rose-200';
+                    iconBg = 'bg-rose-100 text-rose-700';
+                    badgeHtml = `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-100 text-rose-800">Belum</span>`;
+                }
+            }
+
+            return `
+                <div class="bg-white rounded-2xl border ${ringColor} shadow-sm hover:shadow-md transition-all p-3.5 flex flex-col justify-between gap-3">
+                    <div class="flex items-start justify-between gap-1.5">
+                        <div class="w-9 h-9 rounded-xl ${iconBg} flex items-center justify-center font-extrabold text-xs shrink-0">
+                            ${room.name.replace(/[^0-9]/g, '') || '#'}
+                        </div>
+                        ${badgeHtml}
+                    </div>
+
+                    <div class="space-y-0.5">
+                        <h3 class="text-xs sm:text-sm font-bold text-slate-900 truncate">${room.name}</h3>
+                        <p class="text-[11px] font-medium text-slate-600 truncate">
+                            ${room.isOccupied ? (room.tenantName || 'Penghuni') : 'Tersedia'}
+                        </p>
+                        <p class="text-[11px] font-bold ${room.isOccupied ? (summary.status === 'paid' ? 'text-emerald-600' : 'text-slate-800') : 'text-slate-400'}">
+                            ${room.isOccupied ? (summary.status === 'partial' ? `Sisa ${formatShortRupiah(summary.remaining)}` : formatShortRupiah(summary.totalBill)) : formatShortRupiah(room.price)}
+                        </p>
+                    </div>
+
+                    ${room.isOccupied ? `
+                        <div class="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                            <div class="h-full ${summary.status === 'paid' ? 'bg-emerald-500' : (summary.status === 'partial' ? 'bg-amber-500' : 'bg-rose-400')}" style="width: ${summary.percentage}%"></div>
+                        </div>
+                    ` : '<div class="h-1.5"></div>'}
+
+                    <!-- Mini Icon Buttons -->
+                    <div class="pt-2 border-t border-slate-100 flex items-center justify-between gap-1">
+                        ${room.isOccupied ? `
+                            <button type="button" onclick="openPaymentModal('${room.id}')" class="flex-1 p-1.5 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-700 flex items-center justify-center transition-colors" title="Input Bayar / Cicil">
+                                <i data-lucide="banknote" class="w-3.5 h-3.5"></i>
+                            </button>
+                            <button type="button" onclick="sendWhatsAppReminder('${room.id}')" class="flex-1 p-1.5 rounded-lg bg-green-50 hover:bg-green-100 text-green-700 flex items-center justify-center transition-colors" title="Kirim WhatsApp">
+                                <i data-lucide="message-circle" class="w-3.5 h-3.5"></i>
+                            </button>
+                        ` : `
+                            <button type="button" onclick="openEditRoomModal('${room.id}')" class="flex-1 p-1.5 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-700 flex items-center justify-center transition-colors" title="Isi Penghuni">
+                                <i data-lucide="user-plus" class="w-3.5 h-3.5"></i>
+                            </button>
+                        `}
+                        <button type="button" onclick="openEditRoomModal('${room.id}')" class="flex-1 p-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center justify-center transition-colors" title="Edit Kamar">
+                            <i data-lucide="settings-2" class="w-3.5 h-3.5"></i>
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
         function renderTransactionsTable() {
             const tbody = document.getElementById('transactions-tbody');
             const emptyState = document.getElementById('empty-transactions');
@@ -1491,76 +1545,75 @@
             const totalAmountEl = document.getElementById('history-total-amount');
             const subtitleEl = document.getElementById('history-subtitle');
 
-            const filtered = transactionsList
+            if (!tbody) return;
+
+            const filteredTx = transactionsList
                 .filter(tx => {
-                    const [txYear, txMonth] = (tx.period || '').split('-');
+                    if (!tx.period) return false;
+                    const [txYear, txMonth] = tx.period.split('-');
                     const matchMonth = historyFilterMonth === 'ALL' || txMonth === historyFilterMonth;
                     const matchYear = historyFilterYear === 'ALL' || txYear === historyFilterYear;
                     return matchMonth && matchYear;
                 })
                 .sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
 
-            const totalNominal = filtered.reduce((acc, item) => acc + (Number(item.amount) || 0), 0);
+            const totalFilteredNominal = filteredTx.reduce((sum, tx) => sum + (Number(tx.amount) || 0), 0);
 
-            if (countBadge) countBadge.textContent = `${filtered.length} Transaksi`;
-            if (totalAmountEl) totalAmountEl.textContent = formatRupiah(totalNominal);
+            if (countBadge) countBadge.textContent = `${filteredTx.length} Transaksi`;
+            if (totalAmountEl) totalAmountEl.textContent = formatRupiah(totalFilteredNominal);
 
             if (subtitleEl) {
-                if (historyFilterMonth === 'ALL' && historyFilterYear === 'ALL') {
-                    subtitleEl.textContent = 'Menampilkan seluruh riwayat transaksi semua periode.';
-                } else if (historyFilterMonth === 'ALL') {
-                    subtitleEl.textContent = `Menampilkan seluruh transaksi tahun ${historyFilterYear}.`;
-                } else if (historyFilterYear === 'ALL') {
-                    subtitleEl.textContent = `Menampilkan transaksi bulan ${MONTH_NAMES_ID[historyFilterMonth]} (semua tahun).`;
-                } else {
-                    subtitleEl.textContent = `Menampilkan transaksi periode ${MONTH_NAMES_ID[historyFilterMonth]} ${historyFilterYear}.`;
+                let filterDesc = 'Semua periode transaksi pembayaran';
+                if (historyFilterMonth !== 'ALL' && historyFilterYear !== 'ALL') {
+                    filterDesc = `Menampilkan tagihan periode ${MONTH_NAMES_ID[historyFilterMonth]} ${historyFilterYear}`;
+                } else if (historyFilterMonth !== 'ALL') {
+                    filterDesc = `Menampilkan tagihan bulan ${MONTH_NAMES_ID[historyFilterMonth]} (Semua Tahun)`;
+                } else if (historyFilterYear !== 'ALL') {
+                    filterDesc = `Menampilkan tagihan tahun ${historyFilterYear} (Semua Bulan)`;
                 }
+                subtitleEl.textContent = filterDesc;
             }
 
-            tbody.innerHTML = '';
-
-            if (filtered.length === 0) {
+            if (filteredTx.length === 0) {
+                tbody.innerHTML = '';
                 emptyState.classList.remove('hidden');
                 return;
             }
 
             emptyState.classList.add('hidden');
-
-            filtered.forEach(tx => {
-                const tr = document.createElement('tr');
-                tr.className = 'hover:bg-slate-50/90 transition-colors';
-                tr.innerHTML = `
+            tbody.innerHTML = filteredTx.map(tx => `
+                <tr class="hover:bg-slate-50/90 transition-colors">
                     <td class="py-3.5 px-4 sm:px-6 font-medium text-slate-700 whitespace-nowrap">
                         ${formatDateIndo(tx.paidDate)}
                     </td>
                     <td class="py-3.5 px-4 sm:px-6">
-                        <div class="font-bold text-slate-900">${tx.roomName || '-'}</div>
+                        <div class="font-bold text-slate-900">${tx.roomName}</div>
                         <div class="text-xs text-slate-500">${tx.tenantName || '-'}</div>
                     </td>
                     <td class="py-3.5 px-4 sm:px-6 whitespace-nowrap">
-                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-lg text-xs font-semibold bg-indigo-50 text-indigo-700 border border-indigo-100">
-                            Tagihan ${formatPeriodIndo(tx.period)}
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-semibold bg-slate-100 text-slate-700">
+                            ${formatPeriodIndo(tx.period)}
                         </span>
                     </td>
-                    <td class="py-3.5 px-4 sm:px-6 text-slate-600">
-                        ${tx.note || 'Pembayaran Sewa'}
+                    <td class="py-3.5 px-4 sm:px-6">
+                        <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-xs font-medium bg-indigo-50 text-indigo-700">
+                            ${tx.note || 'Pembayaran Sewa'}
+                        </span>
                     </td>
                     <td class="py-3.5 px-4 sm:px-6 font-extrabold text-emerald-600 whitespace-nowrap">
-                        ${formatRupiah(tx.amount)}
+                        +${formatRupiah(tx.amount)}
                     </td>
                     <td class="py-3.5 px-4 sm:px-6 text-right whitespace-nowrap">
-                        <button type="button" onclick="confirmDeleteTransaction('${tx.id}')" class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-semibold text-rose-600 hover:bg-rose-50 transition-colors" title="Hapus Transaksi">
-                            <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
-                            <span class="hidden sm:inline">Hapus</span>
+                        <button type="button" onclick="confirmDeleteTransaction('${tx.id}')" class="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors" title="Hapus Transaksi Ini">
+                            <i data-lucide="trash-2" class="w-4 h-4"></i>
                         </button>
                     </td>
-                `;
-                tbody.appendChild(tr);
-            });
+                </tr>
+            `).join('');
         }
 
         // ==========================================
-        // 8. PEMBAYARAN CUSTOM / CICILAN & WHATSAPP
+        // 7. MODAL PEMBAYARAN CUSTOM / CICILAN
         // ==========================================
         window.openPaymentModal = (roomId) => {
             const room = roomsData[roomId];
@@ -1570,23 +1623,23 @@
             const summary = getRoomPaymentSummary(room, periodKey);
             const rt = getRealTimeNow();
 
-            document.getElementById('pay-room-id').value = roomId;
-            document.getElementById('payment-modal-subtitle').textContent = `${room.name} - ${room.tenantName || 'Penghuni'} (${formatPeriodIndo(periodKey)})`;
+            document.getElementById('pay-room-id').value = room.id;
+            document.getElementById('payment-modal-subtitle').textContent = `${room.name} • ${room.tenantName || 'Penghuni'} (${MONTH_NAMES_ID[selectedMonth]} ${selectedYear})`;
             document.getElementById('pay-summary-total').textContent = formatRupiah(summary.totalBill);
             document.getElementById('pay-summary-paid').textContent = formatRupiah(summary.amountPaid);
             document.getElementById('pay-summary-remaining').textContent = formatRupiah(summary.remaining);
 
-            const amountInput = document.getElementById('pay-amount-input');
-            amountInput.value = summary.remaining > 0 ? summary.remaining : room.price;
+            const defaultPay = summary.remaining > 0 ? summary.remaining : summary.totalBill;
+            document.getElementById('pay-amount-input').value = defaultPay;
             document.getElementById('pay-date-input').value = rt.isoDate;
-            document.getElementById('pay-note-input').value = '';
+            document.getElementById('pay-note-input').value = summary.amountPaid > 0 ? 'Pelunasan Sisa' : 'Pembayaran Sewa';
 
             updatePaymentPreviewHint();
-            amountInput.oninput = updatePaymentPreviewHint;
 
             const modal = document.getElementById('payment-modal');
             modal.classList.remove('hidden');
             modal.classList.add('flex');
+            if (window.lucide) lucide.createIcons();
         };
 
         window.closePaymentModal = () => {
@@ -1606,12 +1659,13 @@
             const noteInput = document.getElementById('pay-note-input');
 
             if (mode === 'half') {
-                const halfVal = Math.max(1000, Math.round((summary.remaining > 0 ? summary.remaining : room.price) / 2));
+                const halfVal = Math.round(summary.totalBill / 2);
                 amountInput.value = halfVal;
-                if (!noteInput.value) noteInput.value = 'Cicilan / DP 50%';
+                noteInput.value = 'Cicilan 50%';
             } else {
-                amountInput.value = summary.remaining > 0 ? summary.remaining : room.price;
-                if (!noteInput.value) noteInput.value = 'Pelunasan Sewa';
+                const fullVal = summary.remaining > 0 ? summary.remaining : summary.totalBill;
+                amountInput.value = fullVal;
+                noteInput.value = summary.amountPaid > 0 ? 'Pelunasan Sisa' : 'Pelunasan Penuh';
             }
             updatePaymentPreviewHint();
         };
@@ -1625,20 +1679,19 @@
             const periodKey = getSelectedPeriodKey();
             const summary = getRoomPaymentSummary(room, periodKey);
             const inputVal = Number(document.getElementById('pay-amount-input').value) || 0;
-            const newTotalPaid = summary.amountPaid + inputVal;
+            const newTotal = summary.amountPaid + inputVal;
+            const newRemaining = Math.max(0, summary.totalBill - newTotal);
 
-            if (inputVal <= 0) {
-                hintEl.textContent = 'Masukkan nominal lebih dari Rp 0.';
-                hintEl.className = 'text-[11px] text-rose-600 mt-1.5 font-medium';
-            } else if (newTotalPaid >= summary.totalBill) {
-                hintEl.textContent = `Status akan menjadi LUNAS (Total terbayar: ${formatRupiah(newTotalPaid)}).`;
-                hintEl.className = 'text-[11px] text-emerald-600 mt-1.5 font-semibold';
+            if (newTotal >= summary.totalBill) {
+                hintEl.innerHTML = `<span class="text-emerald-700 font-semibold">Status setelah simpan: LUNAS (100%)</span>`;
+            } else if (newTotal > 0) {
+                hintEl.innerHTML = `<span class="text-amber-700 font-semibold">Status setelah simpan: CICIL • Sisa tagihan ${formatRupiah(newRemaining)}</span>`;
             } else {
-                const sisaSetelahBayar = summary.totalBill - newTotalPaid;
-                hintEl.textContent = `Status: CICIL / SEBAGIAN. Sisa tagihan setelah bayar: ${formatRupiah(sisaSetelahBayar)}.`;
-                hintEl.className = 'text-[11px] text-amber-700 mt-1.5 font-semibold';
+                hintEl.textContent = 'Masukkan nominal lebih dari Rp 0.';
             }
         }
+
+        document.getElementById('pay-amount-input')?.addEventListener('input', updatePaymentPreviewHint);
 
         window.submitCustomPayment = (e) => {
             e.preventDefault();
@@ -1647,11 +1700,11 @@
             if (!room) return;
 
             const amount = Number(document.getElementById('pay-amount-input').value) || 0;
-            const paidDate = document.getElementById('pay-date-input').value;
-            const customNote = document.getElementById('pay-note-input').value.trim();
+            const paidDate = document.getElementById('pay-date-input').value || getRealTimeNow().isoDate;
+            const rawNote = document.getElementById('pay-note-input').value.trim();
 
             if (amount <= 0) {
-                showToast('Nominal pembayaran harus lebih dari Rp 0.', 'error');
+                showToast('Nominal pembayaran harus lebih dari Rp 0', 'error');
                 return;
             }
 
@@ -1665,80 +1718,115 @@
                 lastPaidAt: paidDate
             };
 
-            const defaultNote = updatedPaid >= (Number(room.price) || 0)
-                ? (prevPaid > 0 ? 'Pelunasan Sisa Sewa' : 'Pelunasan Sewa Penuh')
-                : 'Pembayaran Cicilan / Sebagian';
+            const isNowPaid = updatedPaid >= (Number(room.price) || 0);
+            const finalNote = rawNote || (isNowPaid ? 'Pelunasan Sewa' : 'Cicilan Sewa');
 
             transactionsList.push({
                 id: `tx_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
                 roomId: room.id,
                 roomName: room.name,
                 tenantName: room.tenantName || 'Penghuni',
-                amount: amount,
+                amount,
                 period: periodKey,
-                paidDate: paidDate,
-                note: customNote || defaultNote,
+                paidDate,
+                note: finalNote,
                 createdAt: Date.now()
             });
 
-            saveLocalData(false);
+            saveLocalData();
             closePaymentModal();
             renderAll();
             showToast(`Pembayaran ${formatRupiah(amount)} untuk ${room.name} berhasil dicatat!`);
         };
 
-        window.sendWhatsAppReminder = (roomId) => {
-            const room = roomsData[roomId];
-            if (!room || !room.isOccupied) return;
+        // ==========================================
+        // 8. HAPUS TRANSAKSI & OTOMATIS KOREKSI SALDO KAMAR
+        // ==========================================
+        let pendingConfirmAction = null;
 
-            let cleanPhone = (room.tenantPhone || '').replace(/[^0-9]/g, '');
-            if (!cleanPhone) {
-                showToast('Nomor WhatsApp penghuni belum diisi. Silakan lengkapi di menu Edit.', 'error');
-                openEditRoomModal(roomId);
-                return;
+        window.confirmDeleteTransaction = (txId) => {
+            const tx = transactionsList.find(t => t.id === txId);
+            if (!tx) return;
+
+            document.getElementById('confirm-modal-title').textContent = 'Hapus Catatan Pembayaran';
+            document.getElementById('confirm-modal-desc').textContent = `Hapus transaksi ${formatRupiah(tx.amount)} (${tx.roomName})? Total terbayar pada kamar tersebut otomatis akan disesuaikan kembali.`;
+
+            pendingConfirmAction = () => {
+                transactionsList = transactionsList.filter(t => t.id !== txId);
+                const room = roomsData[tx.roomId];
+                if (room && room.payments && room.payments[tx.period]) {
+                    const currentPaid = Number(room.payments[tx.period].amountPaid) || 0;
+                    const reduced = Math.max(0, currentPaid - (Number(tx.amount) || 0));
+                    if (reduced === 0) {
+                        delete room.payments[tx.period];
+                    } else {
+                        room.payments[tx.period].amountPaid = reduced;
+                    }
+                }
+                saveLocalData();
+                renderAll();
+                showToast('Catatan transaksi berhasil dihapus');
+            };
+
+            const modal = document.getElementById('confirm-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        };
+
+        window.triggerResetConfirmation = () => {
+            document.getElementById('confirm-modal-title').textContent = 'Reset Data ke Awal';
+            document.getElementById('confirm-modal-desc').textContent = 'Semua data kamar, penghuni, dan riwayat pembayaran pada ID Cloud ini akan dikembalikan ke 4 kamar contoh awal. Lanjutkan?';
+
+            pendingConfirmAction = () => {
+                const { defaultRooms, defaultTransactions } = buildDefaultData();
+                roomsData = defaultRooms;
+                transactionsList = defaultTransactions;
+                saveLocalData();
+                closeInfoModal();
+                renderAll();
+                showToast('Data berhasil dikembalikan ke pengaturan awal');
+            };
+
+            const modal = document.getElementById('confirm-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        };
+
+        document.getElementById('confirm-modal-action-btn')?.addEventListener('click', () => {
+            if (typeof pendingConfirmAction === 'function') {
+                pendingConfirmAction();
+                pendingConfirmAction = null;
             }
-            if (cleanPhone.startsWith('0')) {
-                cleanPhone = '62' + cleanPhone.slice(1);
-            }
+            closeConfirmModal();
+        });
 
-            const periodKey = getSelectedPeriodKey();
-            const periodLabel = formatPeriodIndo(periodKey);
-            const summary = getRoomPaymentSummary(room, periodKey);
-            const tenant = room.tenantName || 'Kak';
-
-            let message = '';
-            if (summary.status === 'paid') {
-                message = `Halo ${tenant} (${room.name}), terima kasih! Pembayaran sewa kost periode *${periodLabel}* sebesar *${formatRupiah(summary.amountPaid)}* telah kami terima dan berstatus *LUNAS*. Sehat dan sukses selalu!`;
-            } else if (summary.status === 'partial') {
-                message = `Halo ${tenant} (${room.name}), kami menginformasikan rincian sewa kost periode *${periodLabel}*:\n• Total Tagihan: *${formatRupiah(summary.totalBill)}*\n• Sudah Dibayar: *${formatRupiah(summary.amountPaid)}*\n• Sisa Tagihan: *${formatRupiah(summary.remaining)}*\n\nMohon konfirmasi untuk pelunasan sisanya sebelum tanggal ${room.dueDate || 1}. Terima kasih!`;
-            } else {
-                message = `Halo ${tenant} (${room.name}), sekadar mengingatkan untuk pembayaran sewa kost periode *${periodLabel}* sebesar *${formatRupiah(summary.totalBill)}* (jatuh tempo tanggal ${room.dueDate || 1}). Terima kasih!`;
-            }
-
-            const waUrl = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(message)}`;
-            window.open(waUrl, '_blank', 'noopener,noreferrer');
+        window.closeConfirmModal = () => {
+            const modal = document.getElementById('confirm-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
         };
 
         // ==========================================
-        // 9. TAMBAH, EDIT & HAPUS KAMAR DINAMIS
+        // 9. TAMBAH KAMAR, EDIT KAMAR & HAPUS KAMAR
         // ==========================================
         window.openAddRoomModal = () => {
-            const rooms = getSortedRooms();
-            const nextNum = rooms.length + 1;
-            const suggestedName = `Kamar ${String(nextNum).padStart(2, '0')}`;
+            const existingCount = Object.keys(roomsData).length;
+            const nextNum = String(existingCount + 1).padStart(2, '0');
 
-            document.getElementById('add-room-name').value = suggestedName;
+            document.getElementById('add-room-name').value = `Kamar ${nextNum}`;
             document.getElementById('add-room-occupied').value = 'true';
             document.getElementById('add-tenant-name').value = '';
             document.getElementById('add-tenant-phone').value = '';
             document.getElementById('add-room-price').value = 1500000;
             document.getElementById('add-due-date').value = 1;
             document.getElementById('add-room-notes').value = '';
+
             toggleAddTenantFields();
 
             const modal = document.getElementById('add-room-modal');
             modal.classList.remove('hidden');
             modal.classList.add('flex');
+            if (window.lucide) lucide.createIcons();
         };
 
         window.closeAddRoomModal = () => {
@@ -1750,47 +1838,46 @@
         window.toggleAddTenantFields = () => {
             const isOccupied = document.getElementById('add-room-occupied').value === 'true';
             const container = document.getElementById('add-tenant-fields-container');
+            if (!container) return;
             container.style.opacity = isOccupied ? '1' : '0.45';
-            document.getElementById('add-tenant-name').disabled = !isOccupied;
-            document.getElementById('add-tenant-phone').disabled = !isOccupied;
+            container.style.pointerEvents = isOccupied ? 'auto' : 'none';
         };
 
         window.submitNewRoom = (e) => {
             e.preventDefault();
-            const name = document.getElementById('add-room-name').value.trim();
+            const roomName = document.getElementById('add-room-name').value.trim();
             const isOccupied = document.getElementById('add-room-occupied').value === 'true';
-            const tenantName = isOccupied ? document.getElementById('add-tenant-name').value.trim() : '';
-            const tenantPhone = isOccupied ? document.getElementById('add-tenant-phone').value.trim() : '';
+            const tenantName = document.getElementById('add-tenant-name').value.trim();
+            const tenantPhone = document.getElementById('add-tenant-phone').value.trim();
             const price = Number(document.getElementById('add-room-price').value) || 0;
             const dueDate = Math.min(31, Math.max(1, Number(document.getElementById('add-due-date').value) || 1));
             const notes = document.getElementById('add-room-notes').value.trim();
 
-            if (!name) {
-                showToast('Nama/nomor kamar wajib diisi.', 'error');
+            if (!roomName) {
+                showToast('Nama atau nomor kamar wajib diisi.', 'error');
                 return;
             }
 
-            const existingRooms = getSortedRooms();
-            const maxOrder = existingRooms.reduce((max, r) => Math.max(max, r.order || 0), 0);
-            const newId = `room_${Date.now()}_${Math.random().toString(36).slice(2, 5)}`;
+            const maxOrder = Object.values(roomsData).reduce((max, r) => Math.max(max, r.order || 0), 0);
+            const newId = `room_${Date.now()}`;
 
             roomsData[newId] = {
                 id: newId,
                 order: maxOrder + 1,
-                name,
+                name: roomName,
                 isOccupied,
-                tenantName: isOccupied ? (tenantName || 'Penghuni Baru') : '',
-                tenantPhone,
+                tenantName: isOccupied ? tenantName : '',
+                tenantPhone: isOccupied ? tenantPhone : '',
                 price,
                 dueDate,
                 notes,
                 payments: {}
             };
 
-            saveLocalData(false);
+            saveLocalData();
             closeAddRoomModal();
             renderAll();
-            showToast(`${name} berhasil ditambahkan!`);
+            showToast(`${roomName} berhasil ditambahkan!`);
         };
 
         window.openEditRoomModal = (roomId) => {
@@ -1811,6 +1898,7 @@
             const modal = document.getElementById('edit-room-modal');
             modal.classList.remove('hidden');
             modal.classList.add('flex');
+            if (window.lucide) lucide.createIcons();
         };
 
         window.closeEditRoomModal = () => {
@@ -1822,9 +1910,9 @@
         window.toggleTenantFields = () => {
             const isOccupied = document.getElementById('edit-room-occupied').value === 'true';
             const container = document.getElementById('tenant-fields-container');
+            if (!container) return;
             container.style.opacity = isOccupied ? '1' : '0.45';
-            document.getElementById('edit-tenant-name').disabled = !isOccupied;
-            document.getElementById('edit-tenant-phone').disabled = !isOccupied;
+            container.style.pointerEvents = isOccupied ? 'auto' : 'none';
         };
 
         window.saveRoomData = (e) => {
@@ -1833,37 +1921,99 @@
             const room = roomsData[roomId];
             if (!room) return;
 
-            const name = document.getElementById('edit-room-name').value.trim();
+            const newName = document.getElementById('edit-room-name').value.trim();
             const isOccupied = document.getElementById('edit-room-occupied').value === 'true';
-            const tenantName = isOccupied ? document.getElementById('edit-tenant-name').value.trim() : '';
-            const tenantPhone = isOccupied ? document.getElementById('edit-tenant-phone').value.trim() : '';
+            const tenantName = document.getElementById('edit-tenant-name').value.trim();
+            const tenantPhone = document.getElementById('edit-tenant-phone').value.trim();
             const price = Number(document.getElementById('edit-room-price').value) || 0;
             const dueDate = Math.min(31, Math.max(1, Number(document.getElementById('edit-due-date').value) || 1));
             const notes = document.getElementById('edit-room-notes').value.trim();
 
-            room.name = name || room.name;
+            if (!newName) {
+                showToast('Nama kamar tidak boleh kosong', 'error');
+                return;
+            }
+
+            room.name = newName;
             room.isOccupied = isOccupied;
-            room.tenantName = isOccupied ? (tenantName || 'Penghuni') : '';
-            room.tenantPhone = tenantPhone;
+            room.tenantName = isOccupied ? tenantName : '';
+            room.tenantPhone = isOccupied ? tenantPhone : '';
             room.price = price;
             room.dueDate = dueDate;
             room.notes = notes;
 
-            saveLocalData(false);
+            saveLocalData();
             closeEditRoomModal();
             renderAll();
-            showToast(`Data ${room.name} berhasil diperbarui!`);
+            showToast(`Data ${room.name} berhasil disimpan!`);
+        };
+
+        window.confirmDeleteCurrentRoom = () => {
+            const roomId = document.getElementById('edit-room-id').value;
+            const room = roomsData[roomId];
+            if (!room) return;
+
+            document.getElementById('confirm-modal-title').textContent = `Hapus ${room.name}`;
+            document.getElementById('confirm-modal-desc').textContent = `Apakah Anda yakin ingin menghapus ${room.name} secara permanen dari daftar kamar kost?`;
+
+            pendingConfirmAction = () => {
+                delete roomsData[roomId];
+                saveLocalData();
+                closeEditRoomModal();
+                renderAll();
+                showToast(`${room.name} berhasil dihapus`);
+            };
+
+            const modal = document.getElementById('confirm-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
         };
 
         // ==========================================
-        // 10. MODAL INFO / SYNC & KONFIRMASI HAPUS / RESET
+        // 10. PENGINGAT WHATSAPP OTOMATIS (3 KONDISI)
+        // ==========================================
+        window.sendWhatsAppReminder = (roomId) => {
+            const room = roomsData[roomId];
+            if (!room || !room.isOccupied) return;
+
+            let rawPhone = (room.tenantPhone || '').replace(/[^0-9]/g, '');
+            if (!rawPhone) {
+                showToast('Nomor WhatsApp penghuni belum diisi. Silakan klik Edit.', 'error');
+                return;
+            }
+            if (rawPhone.startsWith('0')) {
+                rawPhone = '62' + rawPhone.slice(1);
+            }
+
+            const periodKey = getSelectedPeriodKey();
+            const periodLabel = `${MONTH_NAMES_ID[selectedMonth]} ${selectedYear}`;
+            const summary = getRoomPaymentSummary(room, periodKey);
+            const tenant = room.tenantName || 'Kak';
+
+            let message = '';
+            if (summary.status === 'paid') {
+                message = `Halo ${tenant}, terima kasih telah melunasi pembayaran sewa *${room.name}* untuk periode *${periodLabel}* sebesar *${formatRupiah(summary.totalBill)}*. Status: *LUNAS*. 🙏`;
+            } else if (summary.status === 'partial') {
+                message = `Halo ${tenant}, menginfokan rincian pembayaran sewa *${room.name}* periode *${periodLabel}*:\n- Total Sewa: ${formatRupiah(summary.totalBill)}\n- Sudah Dibayar: ${formatRupiah(summary.amountPaid)}\n- *Sisa Tagihan: ${formatRupiah(summary.remaining)}*\nMohon pelunasan sebelum tanggal *${room.dueDate} ${periodLabel}*. Terima kasih! 🙏`;
+            } else {
+                message = `Halo ${tenant}, mengingatkan untuk pembayaran sewa *${room.name}* periode *${periodLabel}* sebesar *${formatRupiah(summary.totalBill)}* (jatuh tempo tanggal *${room.dueDate} ${periodLabel}*). Mohon konfirmasi jika sudah melakukan pembayaran. Terima kasih! 🙏`;
+            }
+
+            const waUrl = `https://wa.me/${rawPhone}?text=${encodeURIComponent(message)}`;
+            window.open(waUrl, '_blank', 'noopener,noreferrer');
+        };
+
+        // ==========================================
+        // 11. MODAL INFO SINKRONISASI
         // ==========================================
         window.openInfoModal = () => {
-            const syncInput = document.getElementById('sync-code-input');
-            if (syncInput) syncInput.value = activeSyncCode;
+            const inputEl = document.getElementById('sync-code-input');
+            if (inputEl) inputEl.value = activeSyncCode;
+
             const modal = document.getElementById('info-modal');
             modal.classList.remove('hidden');
             modal.classList.add('flex');
+            if (window.lucide) lucide.createIcons();
         };
 
         window.closeInfoModal = () => {
@@ -1872,97 +2022,17 @@
             modal.classList.remove('flex');
         };
 
-        function openConfirmModal(title, desc, onConfirm) {
-            document.getElementById('confirm-modal-title').textContent = title;
-            document.getElementById('confirm-modal-desc').textContent = desc;
-            const actionBtn = document.getElementById('confirm-modal-action-btn');
-            actionBtn.onclick = () => {
-                closeConfirmModal();
-                onConfirm();
-            };
-            const modal = document.getElementById('confirm-modal');
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-        }
-
-        window.closeConfirmModal = () => {
-            const modal = document.getElementById('confirm-modal');
-            modal.classList.add('hidden');
-            modal.classList.remove('flex');
-        };
-
-        window.confirmDeleteCurrentRoom = () => {
-            const roomId = document.getElementById('edit-room-id').value;
-            const room = roomsData[roomId];
-            if (!room) return;
-
-            openConfirmModal(
-                `Hapus ${room.name}?`,
-                `Kamar "${room.name}" akan dihapus dari daftar pemantauan. Riwayat transaksi lama tetap tersimpan di tabel riwayat.`,
-                () => {
-                    const deletedName = room.name;
-                    delete roomsData[roomId];
-                    saveLocalData(false);
-                    closeEditRoomModal();
-                    renderAll();
-                    showToast(`${deletedName} telah dihapus.`);
-                }
-            );
-        };
-
-        window.confirmDeleteTransaction = (txId) => {
-            const tx = transactionsList.find(item => item.id === txId);
-            if (!tx) return;
-
-            openConfirmModal(
-                'Hapus Riwayat Pembayaran?',
-                `Transaksi ${tx.roomName} sebesar ${formatRupiah(tx.amount)} akan dihapus dan nominal terbayar kamar otomatis disesuaikan kembali.`,
-                () => {
-                    transactionsList = transactionsList.filter(item => item.id !== txId);
-
-                    const room = roomsData[tx.roomId];
-                    if (room && room.payments && room.payments[tx.period]) {
-                        const currentPaid = Number(room.payments[tx.period].amountPaid) || 0;
-                        const newPaid = Math.max(0, currentPaid - (Number(tx.amount) || 0));
-                        if (newPaid === 0) {
-                            delete room.payments[tx.period];
-                        } else {
-                            room.payments[tx.period].amountPaid = newPaid;
-                        }
-                    }
-
-                    saveLocalData(false);
-                    renderAll();
-                    showToast('Riwayat pembayaran berhasil dihapus.');
-                }
-            );
-        };
-
-        window.triggerResetConfirmation = () => {
-            openConfirmModal(
-                'Reset Data Default?',
-                'Seluruh kamar tambahan dan riwayat transaksi pada kode sinkronisasi ini akan dikembalikan ke 4 kamar contoh awal. Lanjutkan?',
-                () => {
-                    const { defaultRooms, defaultTransactions } = buildDefaultData();
-                    roomsData = defaultRooms;
-                    transactionsList = defaultTransactions;
-                    saveLocalData(false);
-                    closeInfoModal();
-                    renderAll();
-                    showToast('Data berhasil dikembalikan ke pengaturan awal.');
-                }
-            );
-        };
-
         // ==========================================
-        // 11. INISIALISASI LANGSUNG & MULAI SINKRONISASI CLOUD
+        // 12. INISIALISASI APLIKASI SAAT HALAMAN DIMUAT
         // ==========================================
-        updateLiveClock();
-        setInterval(updateLiveClock, 1000);
-        initPeriodControls();
-        loadLocalData();
-        renderAll();
-        initCloudSync();
+        window.addEventListener('DOMContentLoaded', () => {
+            loadLocalData();
+            initYearDropdown();
+            updateLiveClock();
+            setInterval(updateLiveClock, 1000);
+            renderAll();
+            initCloudSync();
+        });
     </script>
 </body>
 </html>
