@@ -45,6 +45,24 @@
     <!-- Toast Notification Container -->
     <div id="toast-container" class="fixed bottom-4 right-4 z-50 flex flex-col gap-2 max-w-sm w-full pointer-events-none px-4 sm:px-0"></div>
 
+    <!-- Banner Mode Demo (Muncul otomatis saat menggunakan kode demo) -->
+    <div id="demo-mode-banner" class="hidden bg-amber-500 text-white px-4 py-2 text-xs font-medium shadow-xs">
+        <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-2">
+            <div class="flex items-center gap-2">
+                <span class="px-2 py-0.5 bg-white text-amber-700 font-bold rounded text-[10px] uppercase tracking-wider">Mode Demo</span>
+                <span>Anda sedang membuka ruang simulasi presentasi (data kost asli Anda aman).</span>
+            </div>
+            <div class="flex items-center gap-2">
+                <button onclick="resetDemoShowcaseData()" class="px-2.5 py-1 bg-amber-600 hover:bg-amber-700 rounded-lg text-[11px] font-semibold transition cursor-pointer">
+                    <i class="fa-solid fa-rotate-right mr-1"></i>Reset Data Demo
+                </button>
+                <button onclick="switchToRealAccount()" class="px-2.5 py-1 bg-white text-amber-800 hover:bg-amber-50 rounded-lg text-[11px] font-bold transition cursor-pointer">
+                    Kembali ke Kost Asli
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- Header / Navbar -->
     <header class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
@@ -103,65 +121,65 @@
                     <option value="10">November</option>
                     <option value="11">Desember</option>
                 </select>
-
-                <select id="filter-year" class="bg-slate-50 border border-slate-300 text-slate-800 text-sm rounded-xl focus:ring-indigo-500 focus:border-indigo-500 px-3.5 py-2.5 font-medium cursor-pointer">
-                    <!-- Opsi tahun diisi dinamis oleh JS -->
-                </select>
-
-                <button id="btn-current-period" onclick="resetToCurrentPeriod()" class="px-3.5 py-2.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs sm:text-sm font-semibold rounded-xl border border-indigo-200 transition flex items-center gap-1.5 cursor-pointer">
-                    <i class="fa-solid fa-rotate-left"></i>
-                    <span>Bulan Ini</span>
-                </button>
-            </div>
-        </section>
-
-        <!-- Ringkasan Statistik (4 Kartu) -->
-        <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <!-- Ringkasan Statistik (5 Kartu: Kamar, Uang Masuk, Pengeluaran, Laba Bersih, Sisa Tagihan) -->
+        <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
             <!-- Kamar Terisi -->
-            <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-4">
-                <div class="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-xl shrink-0">
+            <div class="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-3.5">
+                <div class="w-11 h-11 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-lg shrink-0">
                     <i class="fa-solid fa-door-open"></i>
                 </div>
-                <div>
-                    <p class="text-xs font-medium text-slate-500 uppercase tracking-wider">Kamar Terisi</p>
-                    <p id="stat-occupied" class="text-2xl font-bold text-slate-900 mt-0.5">0 / 4</p>
-                    <p id="stat-empty-note" class="text-xs text-slate-500 mt-0.5">Semua kamar aktif</p>
+                <div class="min-w-0">
+                    <p class="text-[11px] font-medium text-slate-500 uppercase tracking-wider">Kamar Terisi</p>
+                    <p id="stat-occupied" class="text-xl font-bold text-slate-900 mt-0.5 truncate">0 / 4</p>
+                    <p id="stat-empty-note" class="text-[11px] text-slate-500 mt-0.5 truncate">Semua kamar aktif</p>
                 </div>
             </div>
 
             <!-- Pemasukan Masuk -->
-            <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-4">
-                <div class="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl shrink-0">
+            <div class="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-3.5">
+                <div class="w-11 h-11 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-lg shrink-0">
                     <i class="fa-solid fa-wallet"></i>
                 </div>
-                <div>
-                    <p class="text-xs font-medium text-slate-500 uppercase tracking-wider">Uang Masuk</p>
-                    <p id="stat-paid-amount" class="text-xl sm:text-2xl font-bold text-emerald-600 mt-0.5">Rp 0</p>
-                    <p id="stat-paid-count" class="text-xs text-slate-500 mt-0.5">0 Lunas • 0 Cicil</p>
+                <div class="min-w-0">
+                    <p class="text-[11px] font-medium text-slate-500 uppercase tracking-wider">Uang Masuk</p>
+                    <p id="stat-paid-amount" class="text-lg sm:text-xl font-bold text-emerald-600 mt-0.5 truncate">Rp 0</p>
+                    <p id="stat-paid-count" class="text-[11px] text-slate-500 mt-0.5 truncate">0 Lunas • 0 Cicil</p>
                 </div>
             </div>
 
-            <!-- Belum Lunas / Cicil -->
-            <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-4">
-                <div class="w-12 h-12 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center text-xl shrink-0">
-                    <i class="fa-solid fa-clock-rotate-left"></i>
+            <!-- Biaya Pengeluaran Kost -->
+            <div class="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-3.5">
+                <div class="w-11 h-11 rounded-xl bg-orange-50 text-orange-600 flex items-center justify-center text-lg shrink-0">
+                    <i class="fa-solid fa-bolt"></i>
                 </div>
-                <div>
-                    <p class="text-xs font-medium text-slate-500 uppercase tracking-wider">Belum Lunas</p>
-                    <p id="stat-unpaid-count" class="text-2xl font-bold text-amber-600 mt-0.5">0 Kamar</p>
-                    <p id="stat-partial-note" class="text-xs text-slate-500 mt-0.5">Termasuk cicilan berjalan</p>
+                <div class="min-w-0">
+                    <p class="text-[11px] font-medium text-slate-500 uppercase tracking-wider">Pengeluaran</p>
+                    <p id="stat-expense-amount" class="text-lg sm:text-xl font-bold text-orange-600 mt-0.5 truncate">Rp 0</p>
+                    <p id="stat-expense-count" class="text-[11px] text-slate-500 mt-0.5 truncate">0 Item Utilities</p>
+                </div>
+            </div>
+
+            <!-- Laba Bersih Bulan Ini -->
+            <div class="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-3.5">
+                <div class="w-11 h-11 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-lg shrink-0">
+                    <i class="fa-solid fa-sack-dollar"></i>
+                </div>
+                <div class="min-w-0">
+                    <p class="text-[11px] font-medium text-slate-500 uppercase tracking-wider">Laba Bersih</p>
+                    <p id="stat-net-profit" class="text-lg sm:text-xl font-bold text-indigo-600 mt-0.5 truncate">Rp 0</p>
+                    <p class="text-[11px] text-slate-500 mt-0.5 truncate">Masuk - Pengeluaran</p>
                 </div>
             </div>
 
             <!-- Total Sisa Tagihan -->
-            <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-4">
-                <div class="w-12 h-12 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center text-xl shrink-0">
+            <div class="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-3.5 sm:col-span-2 lg:col-span-1">
+                <div class="w-11 h-11 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center text-lg shrink-0">
                     <i class="fa-solid fa-file-invoice-dollar"></i>
                 </div>
-                <div>
-                    <p class="text-xs font-medium text-slate-500 uppercase tracking-wider">Sisa Tagihan</p>
-                    <p id="stat-unpaid-amount" class="text-xl sm:text-2xl font-bold text-rose-600 mt-0.5">Rp 0</p>
-                    <p class="text-xs text-slate-500 mt-0.5">Belum terbayar bulan ini</p>
+                <div class="min-w-0">
+                    <p class="text-[11px] font-medium text-slate-500 uppercase tracking-wider">Sisa Tagihan</p>
+                    <p id="stat-unpaid-amount" class="text-lg sm:text-xl font-bold text-rose-600 mt-0.5 truncate">Rp 0</p>
+                    <p id="stat-unpaid-count" class="text-[11px] text-slate-500 mt-0.5 truncate">0 Kamar belum lunas</p>
                 </div>
             </div>
         </section>
@@ -267,6 +285,46 @@
                     </thead>
                     <tbody id="history-table-body" class="divide-y divide-slate-100 text-sm">
                         <!-- Baris riwayat dirender oleh JS -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Pengeluaran Kost / Utilities (Listrik, Air, WiFi, Sampah, Perbaikan) -->
+        <section class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+            <div class="p-5 border-b border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div>
+                    <h2 class="text-base sm:text-lg font-bold text-slate-900 flex items-center gap-2">
+                        <i class="fa-solid fa-bolt-lightning text-orange-500"></i>
+                        <span>Biaya Pengeluaran Kost (Utilities & Operasional)</span>
+                    </h2>
+                    <p class="text-xs text-slate-500 mt-0.5">Catat biaya listrik PLN, air PDAM, internet WiFi, iuran sampah, atau perawatan kost pada periode aktif</p>
+                </div>
+
+                <div class="flex flex-wrap items-center gap-2.5">
+                    <div id="expense-summary-badge" class="text-xs font-semibold text-orange-700 bg-orange-50 border border-orange-200 px-3 py-2 rounded-xl">
+                        0 Item • Rp 0
+                    </div>
+                    <button onclick="openExpenseModal()" class="px-3.5 py-2 bg-orange-600 hover:bg-orange-700 text-white text-xs font-semibold rounded-xl shadow-xs transition flex items-center gap-1.5 cursor-pointer">
+                        <i class="fa-solid fa-plus"></i>
+                        <span>Catat Pengeluaran</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-slate-50 border-b border-slate-200 text-[11px] font-semibold text-slate-500 uppercase tracking-wider">
+                            <th class="py-3.5 px-5">Tanggal</th>
+                            <th class="py-3.5 px-5">Kategori Utilities</th>
+                            <th class="py-3.5 px-5">Keterangan / Detail</th>
+                            <th class="py-3.5 px-5 text-right">Biaya Keluar</th>
+                            <th class="py-3.5 px-5 text-center">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="expense-table-body" class="divide-y divide-slate-100 text-sm">
+                        <!-- Baris pengeluaran dirender oleh JS -->
                     </tbody>
                 </table>
             </div>
@@ -567,7 +625,82 @@
                         <span>Sinkronkan Sekarang</span>
                     </button>
                 </div>
+
+                <!-- Shortcut Cepat Mode Demo Presentasi -->
+                <div class="pt-3 border-t border-slate-100 space-y-2">
+                    <p class="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Presentasi & Uji Coba Calon Klien</p>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        <button type="button" onclick="activateDemoMode()" class="px-3.5 py-2.5 bg-amber-50 hover:bg-amber-100 text-amber-800 text-xs font-semibold rounded-xl border border-amber-200 transition flex items-center justify-center gap-1.5 cursor-pointer">
+                            <i class="fa-solid fa-presentation-screen"></i>
+                            <span>Buka Mode Demo</span>
+                        </button>
+                        <button type="button" onclick="copyDemoShareLink()" class="px-3.5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-xl border border-slate-200 transition flex items-center justify-center gap-1.5 cursor-pointer">
+                            <i class="fa-solid fa-link"></i>
+                            <span>Salin Link Demo</span>
+                        </button>
+                    </div>
+                </div>
             </div>
+        </div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- MODAL 6: INPUT BIAYA PENGELUARAN KOST (UTILITIES)                     -->
+    <!-- ===================================================================== -->
+    <div id="expense-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-900/50 backdrop-blur-xs p-4">
+        <div class="bg-white rounded-2xl max-w-md w-full shadow-2xl border border-slate-200 overflow-hidden modal-animate">
+            <div class="px-6 py-4 bg-orange-600 text-white flex items-center justify-between">
+                <div>
+                    <h3 class="font-bold text-base flex items-center gap-2">
+                        <i class="fa-solid fa-bolt"></i>
+                        <span>Catat Pengeluaran Kost</span>
+                    </h3>
+                    <p id="expense-modal-subtitle" class="text-xs text-orange-100 mt-0.5">Periode Aktif</p>
+                </div>
+                <button onclick="closeExpenseModal()" class="text-orange-100 hover:text-white w-8 h-8 rounded-lg flex items-center justify-center hover:bg-orange-700/60 transition cursor-pointer">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <form id="expense-form" class="p-6 space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">Kategori Utilities / Operasional</label>
+                    <select id="expense-category" required class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm font-medium focus:ring-2 focus:ring-orange-500 focus:border-orange-500">
+                        <option value="Listrik PLN">⚡ Listrik PLN / Token</option>
+                        <option value="Air PDAM">💧 Air PDAM / Pompa</option>
+                        <option value="Internet WiFi">📶 Internet / WiFi Kost</option>
+                        <option value="Kebersihan & Sampah">🧹 Kebersihan & Iuran Sampah</option>
+                        <option value="Perbaikan & Maintenance">🛠️ Perbaikan / Service AC / Lampu</option>
+                        <option value="Lainnya">📦 Operasional Lainnya</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">Nominal Biaya (Rp)</label>
+                    <input type="number" id="expense-amount" required min="500" step="500" placeholder="Contoh: 350000" class="w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-xl text-base font-bold text-slate-900 focus:ring-2 focus:ring-orange-500 focus:border-orange-500">
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">Tanggal Keluar</label>
+                        <input type="date" id="expense-date" required class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-orange-500 focus:border-orange-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">Keterangan Detail</label>
+                        <input type="text" id="expense-note" placeholder="Misal: Token listrik utama" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-orange-500 focus:border-orange-500">
+                    </div>
+                </div>
+
+                <div class="pt-3 flex items-center justify-end gap-2 border-t border-slate-100">
+                    <button type="button" onclick="closeExpenseModal()" class="px-4 py-2.5 text-sm font-medium text-slate-600 hover:bg-slate-100 rounded-xl transition cursor-pointer">
+                        Batal
+                    </button>
+                    <button type="submit" class="px-5 py-2.5 text-sm font-semibold text-white bg-orange-600 hover:bg-orange-700 rounded-xl shadow-sm transition flex items-center gap-1.5 cursor-pointer">
+                        <i class="fa-solid fa-check"></i>
+                        <span>Simpan Pengeluaran</span>
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 
@@ -579,6 +712,7 @@
         const STORAGE_KEYS = {
             ROOMS: 'kostku_rooms_v3',
             PAYMENTS: 'kostku_payments_v3',
+            EXPENSES: 'kostku_expenses_v1',
             LAYOUT: 'kostku_room_layout_v1',
             SYNC_CODE: 'kostku_sync_code_v1',
             LAST_UPDATED: 'kostku_last_updated_v1'
@@ -587,8 +721,16 @@
         // Menggunakan Firebase Realtime Database Milik Pengguna (HTTPS + Full CORS)
         const CLOUD_API_BASE = 'https://kostku-1ba30-default-rtdb.asia-southeast1.firebasedatabase.app/kostku_rooms';
         const DEFAULT_SYNC_CODE = 'kost-fadli88-utama';
+        const DEMO_SYNC_CODE = 'demo-kost-presentasi';
 
-        let activeSyncCode = localStorage.getItem(STORAGE_KEYS.SYNC_CODE) || DEFAULT_SYNC_CODE;
+        // Cek apakah URL dibuka dengan parameter ?demo=1 atau ?kode=...
+        const urlParams = new URLSearchParams(window.location.search);
+        const isUrlDemo = urlParams.get('demo') === '1';
+        const urlCustomCode = urlParams.get('kode');
+
+        let activeSyncCode = isUrlDemo
+            ? DEMO_SYNC_CODE
+            : (urlCustomCode || localStorage.getItem(STORAGE_KEYS.SYNC_CODE) || DEFAULT_SYNC_CODE);
         let isSyncing = false;
         let cloudSyncInterval = null;
 
@@ -619,6 +761,7 @@
 
         let roomsData = [];
         let paymentsData = [];
+        let expensesData = [];
         let currentModalRemaining = 0;
         let pendingConfirmAction = null;
 
@@ -627,6 +770,7 @@
             try {
                 const savedRooms = localStorage.getItem(STORAGE_KEYS.ROOMS);
                 const savedPayments = localStorage.getItem(STORAGE_KEYS.PAYMENTS);
+                const savedExpenses = localStorage.getItem(STORAGE_KEYS.EXPENSES);
 
                 if (savedRooms) {
                     roomsData = JSON.parse(savedRooms);
@@ -664,10 +808,18 @@
                     ];
                     localStorage.setItem(STORAGE_KEYS.PAYMENTS, JSON.stringify(paymentsData));
                 }
+
+                if (savedExpenses) {
+                    expensesData = JSON.parse(savedExpenses);
+                } else {
+                    expensesData = [];
+                    localStorage.setItem(STORAGE_KEYS.EXPENSES, JSON.stringify(expensesData));
+                }
             } catch (err) {
                 console.error('Gagal memuat data lokal:', err);
                 roomsData = JSON.parse(JSON.stringify(DEFAULT_ROOMS));
                 paymentsData = [];
+                expensesData = [];
             }
         }
 
@@ -675,6 +827,7 @@
             const timestamp = Date.now();
             localStorage.setItem(STORAGE_KEYS.ROOMS, JSON.stringify(roomsData));
             localStorage.setItem(STORAGE_KEYS.PAYMENTS, JSON.stringify(paymentsData));
+            localStorage.setItem(STORAGE_KEYS.EXPENSES, JSON.stringify(expensesData));
             localStorage.setItem(STORAGE_KEYS.LAST_UPDATED, String(timestamp));
 
             if (triggerCloudPush) {
@@ -721,7 +874,8 @@
                 const payload = {
                     updatedAt: timestamp,
                     rooms: roomsData,
-                    payments: paymentsData
+                    payments: paymentsData,
+                    expenses: expensesData
                 };
 
                 const response = await fetch(getCloudEndpointUrl(), {
@@ -776,8 +930,10 @@
                         if (cloudUpdated > localUpdated || isManual) {
                             roomsData = cloudData.rooms;
                             paymentsData = Array.isArray(cloudData.payments) ? cloudData.payments : [];
+                            expensesData = Array.isArray(cloudData.expenses) ? cloudData.expenses : [];
                             localStorage.setItem(STORAGE_KEYS.ROOMS, JSON.stringify(roomsData));
                             localStorage.setItem(STORAGE_KEYS.PAYMENTS, JSON.stringify(paymentsData));
+                            localStorage.setItem(STORAGE_KEYS.EXPENSES, JSON.stringify(expensesData));
                             localStorage.setItem(STORAGE_KEYS.LAST_UPDATED, String(cloudUpdated || Date.now()));
                             renderAll();
                             if (isManual) showToast('Data berhasil disinkronkan dari Firebase!', 'success');
@@ -804,6 +960,7 @@
         function startAutoCloudSync() {
             const footerSync = document.getElementById('footer-sync-code');
             if (footerSync) footerSync.textContent = activeSyncCode;
+            updateDemoBannerVisibility();
 
             // Tarik data awal saat halaman dibuka
             pullDataFromCloud(false);
@@ -815,6 +972,105 @@
                     pullDataFromCloud(false);
                 }
             }, 3500);
+        }
+
+        function updateDemoBannerVisibility() {
+            const banner = document.getElementById('demo-mode-banner');
+            if (!banner) return;
+            if (getSanitizedSyncCode() === DEMO_SYNC_CODE) {
+                banner.classList.remove('hidden');
+            } else {
+                banner.classList.add('hidden');
+            }
+        }
+
+        function buildDemoShowcaseDataset() {
+            const currentPeriod = getPeriodKey(selectedYear, selectedMonth);
+            const todayStr = formatDateInput(new Date());
+            const dueLate = Math.max(1, new Date().getDate() - 3);
+            const dueSoon = Math.min(28, new Date().getDate() + 2);
+
+            const demoRooms = [
+                { id: 'demo-r1', name: 'Kamar 01 (AC)', status: 'occupied', tenantName: 'Rizky Pratama', tenantPhone: '081234567890', price: 1500000, dueDay: 5 },
+                { id: 'demo-r2', name: 'Kamar 02 (AC)', status: 'occupied', tenantName: 'Nadia Putri', tenantPhone: '082198765432', price: 1500000, dueDay: dueSoon },
+                { id: 'demo-r3', name: 'Kamar 03 (Non-AC)', status: 'occupied', tenantName: 'Hendra Wijaya', tenantPhone: '085711223344', price: 1000000, dueDay: dueLate },
+                { id: 'demo-r4', name: 'Kamar 04 (Non-AC)', status: 'occupied', tenantName: 'Aulia Rahman', tenantPhone: '081355667788', price: 1000000, dueDay: 20 },
+                { id: 'demo-r5', name: 'Kamar 05 (AC)', status: 'empty', tenantName: '', tenantPhone: '', price: 1500000, dueDay: 1 }
+            ];
+
+            const demoPayments = [
+                {
+                    id: 'demo-p1',
+                    roomId: 'demo-r1',
+                    roomName: 'Kamar 01 (AC)',
+                    tenantName: 'Rizky Pratama',
+                    period: currentPeriod,
+                    amount: 1500000,
+                    date: todayStr,
+                    note: 'Lunas Transfer BCA'
+                },
+                {
+                    id: 'demo-p2',
+                    roomId: 'demo-r2',
+                    roomName: 'Kamar 02 (AC)',
+                    tenantName: 'Nadia Putri',
+                    period: currentPeriod,
+                    amount: 750000,
+                    date: todayStr,
+                    note: 'DP / Cicilan Pertama (50%)'
+                }
+            ];
+
+            return { demoRooms, demoPayments };
+        }
+
+        function activateDemoMode() {
+            activeSyncCode = DEMO_SYNC_CODE;
+            localStorage.setItem(STORAGE_KEYS.SYNC_CODE, DEMO_SYNC_CODE);
+            const { demoRooms, demoPayments } = buildDemoShowcaseDataset();
+            roomsData = demoRooms;
+            paymentsData = demoPayments;
+            saveData(true);
+            updateDemoBannerVisibility();
+            const footerSync = document.getElementById('footer-sync-code');
+            if (footerSync) footerSync.textContent = activeSyncCode;
+            closeSyncModal();
+            renderAll();
+            showToast('Mode Demo Presentasi siap digunakan!', 'info');
+        }
+
+        function resetDemoShowcaseData() {
+            const { demoRooms, demoPayments } = buildDemoShowcaseDataset();
+            roomsData = demoRooms;
+            paymentsData = demoPayments;
+            saveData(true);
+            renderAll();
+            showToast('Data simulasi demo berhasil di-reset ke kondisi awal.', 'success');
+        }
+
+        function switchToRealAccount() {
+            activeSyncCode = DEFAULT_SYNC_CODE;
+            localStorage.setItem(STORAGE_KEYS.SYNC_CODE, DEFAULT_SYNC_CODE);
+            localStorage.setItem(STORAGE_KEYS.LAST_UPDATED, '0');
+            if (window.location.search.includes('demo=1')) {
+                window.history.replaceState({}, document.title, window.location.pathname);
+            }
+            updateDemoBannerVisibility();
+            const footerSync = document.getElementById('footer-sync-code');
+            if (footerSync) footerSync.textContent = activeSyncCode;
+            pullDataFromCloud(true);
+        }
+
+        function copyDemoShareLink() {
+            const baseUrl = window.location.origin + window.location.pathname;
+            const demoUrl = `${baseUrl}?demo=1`;
+            const tempInput = document.createElement('input');
+            tempInput.value = demoUrl;
+            document.body.appendChild(tempInput);
+            tempInput.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempInput);
+            showToast('Link demo (?demo=1) berhasil disalin!', 'success');
         }
 
         function openSyncModal() {
@@ -839,6 +1095,7 @@
             activeSyncCode = rawVal;
             localStorage.setItem(STORAGE_KEYS.SYNC_CODE, activeSyncCode);
             localStorage.setItem(STORAGE_KEYS.LAST_UPDATED, '0');
+            updateDemoBannerVisibility();
             const footerSync = document.getElementById('footer-sync-code');
             if (footerSync) footerSync.textContent = activeSyncCode;
 
@@ -1114,17 +1371,17 @@
                     badgeClass: 'bg-amber-50 text-amber-700 border-amber-200',
                     icon: 'fa-clock'
                 };
-            } else {
-                return {
-                    label: `Jatuh tempo tgl ${safeDueDay}`,
-                    shortLabel: `Tgl ${safeDueDay}`,
-                    badgeClass: 'bg-slate-100 text-slate-600 border-slate-200',
-                    icon: 'fa-calendar-day'
-                };
             }
+
+            return {
+                label: `Jatuh tempo tgl ${safeDueDay}`,
+                shortLabel: `Tgl ${safeDueDay}`,
+                badgeClass: 'bg-slate-100 text-slate-600 border-slate-200',
+                icon: 'fa-calendar-day'
+            };
         }
 
-        // --- 6. RENDER UTAMA (STATISTIK, KARTU KAMAR, & TABEL RIWAYAT) ---
+        // --- 6. RENDER UTAMA (STATISTIK, KARTU KAMAR, RIWAYAT, & PENGELUARAN) ---
         function renderAll() {
             const periodKey = getPeriodKey(selectedYear, selectedMonth);
             const periodLabel = `${MONTH_NAMES[selectedMonth]} ${selectedYear}`;
@@ -1134,6 +1391,7 @@
             renderStats(periodKey);
             renderRooms(periodKey);
             renderHistoryTable();
+            renderExpenseTable(periodKey);
         }
 
         function renderStats(periodKey) {
@@ -1166,16 +1424,26 @@
                 }
             });
 
+            // Hitung pengeluaran utilities pada periode terpilih
+            const periodExpenses = expensesData.filter(exp => exp.period === periodKey);
+            const totalExpenseAmount = periodExpenses.reduce((sum, exp) => sum + (Number(exp.amount) || 0), 0);
+            const netProfitAmount = totalPaidAmount - totalExpenseAmount;
+
             document.getElementById('stat-occupied').textContent = `${occupiedCount} / ${totalRooms}`;
             document.getElementById('stat-empty-note').textContent = emptyCount > 0 ? `${emptyCount} kamar kosong` : 'Semua kamar terisi penuh';
 
             document.getElementById('stat-paid-amount').textContent = formatRupiah(totalPaidAmount);
             document.getElementById('stat-paid-count').textContent = `${paidRoomCount} Lunas • ${partialRoomCount} Cicil`;
 
-            document.getElementById('stat-unpaid-count').textContent = `${unpaidRoomCount} Kamar`;
-            document.getElementById('stat-partial-note').textContent = partialRoomCount > 0 ? `${partialRoomCount} sedang mencicil` : 'Belum ada cicilan';
+            document.getElementById('stat-expense-amount').textContent = formatRupiah(totalExpenseAmount);
+            document.getElementById('stat-expense-count').textContent = `${periodExpenses.length} Item Utilities`;
+
+            const netProfitEl = document.getElementById('stat-net-profit');
+            netProfitEl.textContent = formatRupiah(netProfitAmount);
+            netProfitEl.className = `text-lg sm:text-xl font-bold mt-0.5 truncate ${netProfitAmount < 0 ? 'text-rose-600' : 'text-indigo-600'}`;
 
             document.getElementById('stat-unpaid-amount').textContent = formatRupiah(totalRemainingAmount);
+            document.getElementById('stat-unpaid-count').textContent = `${unpaidRoomCount} Kamar belum lunas`;
         }
 
         function renderRooms(periodKey = getPeriodKey(selectedYear, selectedMonth)) {
@@ -1455,6 +1723,135 @@
                     </td>
                 </tr>
             `).join('');
+        }
+
+        function getCategoryBadgeHtml(category) {
+            const styles = {
+                'Listrik PLN': 'bg-amber-50 text-amber-700 border-amber-200 fa-bolt',
+                'Air PDAM': 'bg-sky-50 text-sky-700 border-sky-200 fa-droplet',
+                'Internet WiFi': 'bg-indigo-50 text-indigo-700 border-indigo-200 fa-wifi',
+                'Kebersihan & Sampah': 'bg-emerald-50 text-emerald-700 border-emerald-200 fa-broom',
+                'Perbaikan & Maintenance': 'bg-rose-50 text-rose-700 border-rose-200 fa-screwdriver-wrench',
+                'Lainnya': 'bg-slate-100 text-slate-700 border-slate-200 fa-box-open'
+            };
+            const raw = styles[category] || styles['Lainnya'];
+            const parts = raw.split(' ');
+            const iconClass = parts.pop();
+            const colorClasses = parts.join(' ');
+            return `<span class="inline-flex items-center gap-1.5 text-[11px] font-semibold px-2.5 py-1 rounded-md border ${colorClasses}"><i class="fa-solid ${iconClass}"></i> ${escapeHtml(category)}</span>`;
+        }
+
+        function renderExpenseTable(periodKey = getPeriodKey(selectedYear, selectedMonth)) {
+            const tbody = document.getElementById('expense-table-body');
+            const summaryBadge = document.getElementById('expense-summary-badge');
+
+            const filtered = expensesData.filter(item => item.period === periodKey);
+            filtered.sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+
+            const totalExpense = filtered.reduce((acc, item) => acc + (Number(item.amount) || 0), 0);
+            summaryBadge.textContent = `${filtered.length} Item • ${formatRupiah(totalExpense)}`;
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="5" class="py-8 px-5 text-center text-slate-400 text-xs">
+                            <i class="fa-solid fa-bolt text-xl mb-1.5 block text-slate-300"></i>
+                            Belum ada pengeluaran utilities (Listrik, Air, WiFi, dll) yang dicatat pada periode ${MONTH_NAMES[selectedMonth]} ${selectedYear}.
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tbody.innerHTML = filtered.map(item => `
+                <tr class="hover:bg-slate-50/80 transition">
+                    <td class="py-3.5 px-5 whitespace-nowrap text-xs font-medium text-slate-700">
+                        ${formatDisplayDate(item.date)}
+                    </td>
+                    <td class="py-3.5 px-5 whitespace-nowrap">
+                        ${getCategoryBadgeHtml(item.category)}
+                    </td>
+                    <td class="py-3.5 px-5 text-xs text-slate-600">
+                        ${escapeHtml(item.note || '-')}
+                    </td>
+                    <td class="py-3.5 px-5 whitespace-nowrap text-right font-bold text-orange-600 text-xs sm:text-sm">
+                        ${formatRupiah(item.amount)}
+                    </td>
+                    <td class="py-3.5 px-5 whitespace-nowrap text-center">
+                        <button onclick="promptDeleteExpense('${item.id}')" class="w-8 h-8 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition inline-flex items-center justify-center cursor-pointer" title="Hapus Pengeluaran Ini">
+                            <i class="fa-solid fa-trash-can text-xs"></i>
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // --- 6B. MODAL CATAT & HAPUS BIAYA PENGELUARAN KOST ---
+        function openExpenseModal() {
+            document.getElementById('expense-modal-subtitle').textContent = `Periode Tagihan: ${MONTH_NAMES[selectedMonth]} ${selectedYear}`;
+            document.getElementById('expense-category').value = 'Listrik PLN';
+            document.getElementById('expense-amount').value = '';
+            document.getElementById('expense-date').value = formatDateInput(new Date());
+            document.getElementById('expense-note').value = '';
+
+            const modal = document.getElementById('expense-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeExpenseModal() {
+            const modal = document.getElementById('expense-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        document.getElementById('expense-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const category = document.getElementById('expense-category').value;
+            const amount = parseInt(document.getElementById('expense-amount').value, 10) || 0;
+            const date = document.getElementById('expense-date').value;
+            const note = document.getElementById('expense-note').value.trim();
+
+            if (amount <= 0) {
+                showToast('Masukkan nominal pengeluaran yang valid!', 'warning');
+                return;
+            }
+
+            const periodKey = getPeriodKey(selectedYear, selectedMonth);
+            const newExpense = {
+                id: 'exp-' + Date.now(),
+                period: periodKey,
+                category,
+                amount,
+                date,
+                note: note || `Biaya ${category}`
+            };
+
+            expensesData.push(newExpense);
+            saveData(true);
+            closeExpenseModal();
+            renderAll();
+            showToast(`Pengeluaran ${category} (${formatRupiah(amount)}) berhasil dicatat!`, 'success');
+        });
+
+        function promptDeleteExpense(expenseId) {
+            const expense = expensesData.find(e => e.id === expenseId);
+            if (!expense) return;
+
+            document.getElementById('confirm-modal-title').textContent = 'Hapus Pengeluaran Ini?';
+            document.getElementById('confirm-modal-desc').textContent = `Biaya ${expense.category} sebesar ${formatRupiah(expense.amount)} akan dihapus dan laba bersih akan dihitung ulang.`;
+
+            pendingConfirmAction = () => {
+                expensesData = expensesData.filter(e => e.id !== expenseId);
+                saveData(true);
+                closeConfirmModal();
+                renderAll();
+                showToast('Catatan pengeluaran berhasil dihapus.', 'info');
+            };
+
+            const modal = document.getElementById('confirm-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
         }
 
         // --- 7. MODAL TAMBAH KAMAR BARU ---
