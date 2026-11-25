@@ -121,65 +121,77 @@
                     <option value="10">November</option>
                     <option value="11">Desember</option>
                 </select>
-        <!-- Ringkasan Statistik (5 Kartu: Kamar, Uang Masuk, Pengeluaran, Laba Bersih, Sisa Tagihan) -->
-        <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+
+                <select id="filter-year" class="bg-slate-50 border border-slate-300 text-slate-800 text-sm rounded-xl focus:ring-indigo-500 focus:border-indigo-500 px-3.5 py-2.5 font-medium cursor-pointer">
+                    <!-- Diisi otomatis oleh JS -->
+                </select>
+
+                <button onclick="resetToCurrentPeriod()" class="px-3.5 py-2.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs sm:text-sm font-semibold rounded-xl border border-indigo-200 transition flex items-center gap-1.5 cursor-pointer">
+                    <i class="fa-solid fa-rotate-left"></i>
+                    <span>Bulan Ini</span>
+                </button>
+            </div>
+        </section>
+
+        <!-- Ringkasan Statistik (5 Kartu Tanpa Terpotong) -->
+        <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3.5">
             <!-- Kamar Terisi -->
-            <div class="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-3.5">
-                <div class="w-11 h-11 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-lg shrink-0">
+            <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex items-start gap-3">
+                <div class="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-base shrink-0 mt-0.5">
                     <i class="fa-solid fa-door-open"></i>
                 </div>
-                <div class="min-w-0">
-                    <p class="text-[11px] font-medium text-slate-500 uppercase tracking-wider">Kamar Terisi</p>
-                    <p id="stat-occupied" class="text-xl font-bold text-slate-900 mt-0.5 truncate">0 / 4</p>
-                    <p id="stat-empty-note" class="text-[11px] text-slate-500 mt-0.5 truncate">Semua kamar aktif</p>
+                <div class="min-w-0 flex-1">
+                    <p class="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Kamar Terisi</p>
+                    <p id="stat-occupied" class="text-lg font-bold text-slate-900 mt-0.5 leading-snug">0 / 4</p>
+                    <p id="stat-empty-note" class="text-[11px] text-slate-500 mt-0.5 leading-tight">Semua kamar aktif</p>
                 </div>
             </div>
 
             <!-- Pemasukan Masuk -->
-            <div class="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-3.5">
-                <div class="w-11 h-11 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-lg shrink-0">
+            <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex items-start gap-3">
+                <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-base shrink-0 mt-0.5">
                     <i class="fa-solid fa-wallet"></i>
                 </div>
-                <div class="min-w-0">
-                    <p class="text-[11px] font-medium text-slate-500 uppercase tracking-wider">Uang Masuk</p>
-                    <p id="stat-paid-amount" class="text-lg sm:text-xl font-bold text-emerald-600 mt-0.5 truncate">Rp 0</p>
-                    <p id="stat-paid-count" class="text-[11px] text-slate-500 mt-0.5 truncate">0 Lunas • 0 Cicil</p>
+                <div class="min-w-0 flex-1">
+                    <p class="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Uang Masuk</p>
+                    <p id="stat-paid-amount" class="text-base sm:text-[17px] font-bold text-emerald-600 mt-0.5 leading-snug break-words">Rp 0</p>
+                    <p id="stat-paid-count" class="text-[11px] text-slate-500 mt-0.5 leading-tight">0 Lunas • 0 Cicil</p>
                 </div>
             </div>
 
             <!-- Biaya Pengeluaran Kost -->
-            <div class="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-3.5">
-                <div class="w-11 h-11 rounded-xl bg-orange-50 text-orange-600 flex items-center justify-center text-lg shrink-0">
+            <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex items-start gap-3">
+                <div class="w-10 h-10 rounded-xl bg-orange-50 text-orange-600 flex items-center justify-center text-base shrink-0 mt-0.5">
                     <i class="fa-solid fa-bolt"></i>
                 </div>
-                <div class="min-w-0">
-                    <p class="text-[11px] font-medium text-slate-500 uppercase tracking-wider">Pengeluaran</p>
-                    <p id="stat-expense-amount" class="text-lg sm:text-xl font-bold text-orange-600 mt-0.5 truncate">Rp 0</p>
-                    <p id="stat-expense-count" class="text-[11px] text-slate-500 mt-0.5 truncate">0 Item Utilities</p>
+                <div class="min-w-0 flex-1">
+                    <p class="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Pengeluaran</p>
+                    <p id="stat-expense-amount" class="text-base sm:text-[17px] font-bold text-orange-600 mt-0.5 leading-snug break-words">Rp 0</p>
+                    <p id="stat-expense-count" class="text-[11px] text-slate-500 mt-0.5 leading-tight">0 Item Utilities</p>
                 </div>
             </div>
 
             <!-- Laba Bersih Bulan Ini -->
-            <div class="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-3.5">
-                <div class="w-11 h-11 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-lg shrink-0">
+            <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex items-start gap-3">
+                <div class="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-base shrink-0 mt-0.5">
                     <i class="fa-solid fa-sack-dollar"></i>
                 </div>
-                <div class="min-w-0">
-                    <p class="text-[11px] font-medium text-slate-500 uppercase tracking-wider">Laba Bersih</p>
-                    <p id="stat-net-profit" class="text-lg sm:text-xl font-bold text-indigo-600 mt-0.5 truncate">Rp 0</p>
-                    <p class="text-[11px] text-slate-500 mt-0.5 truncate">Masuk - Pengeluaran</p>
+                <div class="min-w-0 flex-1">
+                    <p class="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Laba Bersih</p>
+                    <p id="stat-net-profit" class="text-base sm:text-[17px] font-bold text-indigo-600 mt-0.5 leading-snug break-words">Rp 0</p>
+                    <p class="text-[11px] text-slate-500 mt-0.5 leading-tight">Masuk - Pengeluaran</p>
                 </div>
             </div>
 
             <!-- Total Sisa Tagihan -->
-            <div class="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-3.5 sm:col-span-2 lg:col-span-1">
-                <div class="w-11 h-11 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center text-lg shrink-0">
+            <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex items-start gap-3 sm:col-span-2 lg:col-span-1">
+                <div class="w-10 h-10 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center text-base shrink-0 mt-0.5">
                     <i class="fa-solid fa-file-invoice-dollar"></i>
                 </div>
-                <div class="min-w-0">
-                    <p class="text-[11px] font-medium text-slate-500 uppercase tracking-wider">Sisa Tagihan</p>
-                    <p id="stat-unpaid-amount" class="text-lg sm:text-xl font-bold text-rose-600 mt-0.5 truncate">Rp 0</p>
-                    <p id="stat-unpaid-count" class="text-[11px] text-slate-500 mt-0.5 truncate">0 Kamar belum lunas</p>
+                <div class="min-w-0 flex-1">
+                    <p class="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Sisa Tagihan</p>
+                    <p id="stat-unpaid-amount" class="text-base sm:text-[17px] font-bold text-rose-600 mt-0.5 leading-snug break-words">Rp 0</p>
+                    <p id="stat-unpaid-count" class="text-[11px] text-slate-500 mt-0.5 leading-tight">0 Kamar belum lunas</p>
                 </div>
             </div>
         </section>
@@ -1440,7 +1452,7 @@
 
             const netProfitEl = document.getElementById('stat-net-profit');
             netProfitEl.textContent = formatRupiah(netProfitAmount);
-            netProfitEl.className = `text-lg sm:text-xl font-bold mt-0.5 truncate ${netProfitAmount < 0 ? 'text-rose-600' : 'text-indigo-600'}`;
+            netProfitEl.className = `text-base sm:text-[17px] font-bold mt-0.5 leading-snug break-words ${netProfitAmount < 0 ? 'text-rose-600' : 'text-indigo-600'}`;
 
             document.getElementById('stat-unpaid-amount').textContent = formatRupiah(totalRemainingAmount);
             document.getElementById('stat-unpaid-count').textContent = `${unpaidRoomCount} Kamar belum lunas`;
